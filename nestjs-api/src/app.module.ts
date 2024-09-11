@@ -10,7 +10,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { ModulesModule } from './modules/modules.module';
+import { RolesModel } from './roles/models/roles.model';
+import { RolesModule } from './roles/roles.module';
+import { RolesService } from './roles/roles.service';
 import { excludeRoutes } from './routes/excludeRoutes';
+import { Roles, RolesSchema } from './schemas/roles.schema';
 import { TeachersModule } from './teachers/teachers.module';
 
 @Module({
@@ -36,9 +40,12 @@ import { TeachersModule } from './teachers/teachers.module';
     AuthModule,
     ModulesModule,
     TeachersModule,
+    RolesModule,
+
+    MongooseModule.forFeature([{ name: Roles.name, schema: RolesSchema }]),
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService, RolesService, RolesModel],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

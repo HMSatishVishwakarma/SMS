@@ -1,4 +1,5 @@
 import { AuthMiddleware } from '@app/middleware';
+import { AclMiddleware } from '@app/middleware/ acl.middleware';
 import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { excludeRoutes as excludeAuthRoutes } from '.';
 export const excludeRoutes = (consumer: MiddlewareConsumer) => {
@@ -9,6 +10,11 @@ export const excludeRoutes = (consumer: MiddlewareConsumer) => {
       path: '*',
       method: RequestMethod.ALL,
     });
+
+  consumer
+    .apply(AclMiddleware)
+    .exclude(...excludeAuthRoutes)
+    .forRoutes('*');
 
   // Add a middleware for only register-assessment Route
   // we can pass multiple routes which are similar like this route

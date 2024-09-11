@@ -1,7 +1,7 @@
 import { UserModel } from '@app/users/model/users.model';
 import { Injectable } from '@nestjs/common';
 
-import { UsersDocuments } from '@app/schemas';
+import { Users, UsersDocuments } from '@app/schemas';
 import * as bcrypt from 'bcrypt';
 import { UserDto } from './dto/users.dto';
 
@@ -53,5 +53,9 @@ export class UsersService {
 
   findAndUpdate(where, data) {
     return this.userModel.findAndUpdate(where, data);
+  }
+
+  async findUserByUsername(username: string): Promise<Users | null> {
+    return this.userModel.findOne({ username }).populate('roles').exec();
   }
 }

@@ -1,4 +1,4 @@
-import { ROLES, STATUS } from '@app/common/enums';
+import { STATUS } from '@app/common/enums';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as mongooseSchema } from 'mongoose';
 
@@ -24,8 +24,11 @@ export class Users {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true, default: ROLES.GUEST })
-  role: string;
+  /*   @Prop({ required: true, default: ROLES.GUEST })
+  role: string; */
+
+  @Prop({ type: mongooseSchema.Types.ObjectId, ref: 'Roles', default: '' })
+  roles: string;
 
   @Prop({ required: true, type: mongooseSchema.Types.Mixed }) // Use Schema.Types.Mixed for object
   profileImage: object;
