@@ -35,32 +35,29 @@ export class AclMiddleware implements NestMiddleware {
       secret: jwtConstants.secret,
     });
 
-    console.log('-----------------payload ,', payload);
+    const { roleDetails, permissions } = payload;
 
-    const username = payload['username'];
+    console.log('-----------------payload ', payload);
 
-    if (!username) {
+    /*  if (!username) {
       throw new UnauthorizedException('No username provided');
     }
 
     const user: any = await this.usersService.findUserByUsername(
       username as string,
-    );
+    ); */
 
-    if (!user) {
+    /*  if (!user) {
       throw new UnauthorizedException('User not found');
-    }
+    } */
 
-    const requiredRoles = req.headers['roles'] as string[]; // Expected roles from request headers or elsewhere
+    const requiredRoles = roleDetails as string[]; // Expected roles from request headers or elsewhere
     const requiredPermissions = req.headers['permissions'] as string[]; // Expected permissions from request headers or elsewhere
 
     if (requiredRoles) {
-      const userRoles = await Promise.all(
-        user.roles.map((roleId) =>
-          this.rolesService.findRoleByName(roleId.toString()),
-        ),
-      );
-      const userRoleNames = userRoles.map((role) => role.name);
+      const userRoleNames = roleDetails.map((role) => role.name);
+
+      console.log(userRoleNames, 'userRoleNames');
 
       if (!requiredRoles.some((role) => userRoleNames.includes(role))) {
         throw new ForbiddenException('Access denied due to role');
@@ -68,11 +65,13 @@ export class AclMiddleware implements NestMiddleware {
     }
 
     if (requiredPermissions) {
-      const userRoles = await Promise.all(
+      /* const userRoles = await Promise.all(
         user.roles.map((roleId) =>
           this.rolesService.findRoleByName(roleId.toString()),
         ),
-      );
+      ); */
+
+      const userRoles = [];
       const userPermissions = userRoles.flatMap((role) => role.permissions);
 
       if (
@@ -84,7 +83,7 @@ export class AclMiddleware implements NestMiddleware {
       }
     }
 
-    req['user'] = user; // Optionally attach user info to request
+    //  req['user'] = user; // Optionally attach user info to request
     next();
   }
 }

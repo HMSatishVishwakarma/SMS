@@ -13,12 +13,11 @@ export class AuthService {
 
   async signIn(username: string, pass: string): Promise<any> {
     try {
-      const users = await this.usersService.findOne({
+      const users = await this.usersService.findUserWithRoleAndPermistion({
         username: username,
         status: STATUS.ACTIVE,
       });
 
-      console.log(users, '---------');
       const {
         password = null,
         username: userName = null,
@@ -26,7 +25,10 @@ export class AuthService {
         role = null,
         email = null,
         status = null,
-      } = users || {};
+        roleDetails = null,
+        permissions = null,
+        role_permission = null,
+      } = users[0] || {};
 
       const validatePassword = await this.usersService.comparePassword({
         requestPassword: pass,
@@ -36,7 +38,14 @@ export class AuthService {
       if (!validatePassword) {
         throw new UnauthorizedException();
       }
-      const payload = { userId: _id, username: userName, roles: role };
+      const payload = {
+        userId: _id,
+        username: userName,
+        roles: role,
+        roleDetails,
+        permissions,
+        role_permission,
+      };
       return {
         userName,
         role,
@@ -50,6 +59,7 @@ export class AuthService {
       };
     } catch (error) {
       Logger.error(error);
+
       throw new UnauthorizedException();
     }
   }

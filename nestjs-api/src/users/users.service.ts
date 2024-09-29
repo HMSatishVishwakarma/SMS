@@ -58,4 +58,40 @@ export class UsersService {
   async findUserByUsername(username: string): Promise<Users | null> {
     return this.userModel.findOne({ username }).populate('roles').exec();
   }
+
+  findUserWithRoleAndPermistion(where: object): Promise<Users | any> {
+    const pipLine = [
+      {
+        $match: where,
+      },
+      {
+        $lookup: {
+          from: 'roles',
+          localField: 'role',
+          foreignField: '_id',
+          as: 'roleDetails',
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'rolePermissions',
+          localField: 'roleDetails._id',
+          foreignField: 'role_id',
+          as: 'role_permission',
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'permissions',
+          localField: 'role_permission.permissions',
+          foreignField: '_id',
+          as: 'permissions',
+        },
+      },
+    ];
+
+    return this.userModel.findUserWithPermissions(pipLine);
+  }
 }

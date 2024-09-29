@@ -11,4 +11,8 @@ export class UserModel extends BaseModel {
   ) {
     super(userModel);
   }
+
+  findUserWithPermissions<T>(pipeline): Promise<T[]> {
+    return this.userModel.aggregate(pipeline);
+  }
 }

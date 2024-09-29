@@ -1,6 +1,16 @@
 import { MongoExceptionFilter } from '@app/common/filters/mongo-exception.filter';
-import { Body, Controller, Get, Post, Req, UseFilters } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  UnauthorizedException,
+  UseFilters,
+} from '@nestjs/common';
 
+import { Action } from '@app/casl/enums/action.enum';
+import { Subject } from '@app/casl/enums/subject.enum';
 import { userRequest } from '@app/common/interfaces';
 import { UserDto } from './dto/users.dto';
 import { UsersService } from './users.service';
@@ -22,6 +32,10 @@ export class UsersController {
 
   @Get('profile')
   getUserInfo(@Req() req: userRequest) {
-    return req.user;
+    const ability = req['user']['permission'];
+    if (ability.can(Action.READ, Subject.User)) {
+      return req.user;
+    }
+    throw new UnauthorizedException();
   }
 }

@@ -10,6 +10,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { NextFunction, Request, Response } from 'express';
 
+import { AbilityBuilder, createMongoAbility } from '@casl/ability';
+
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   static user = null;
@@ -24,6 +26,32 @@ export class AuthMiddleware implements NestMiddleware {
     return type === 'Bearer' ? token : undefined;
   }
 
+  setUserPermission(userData) {
+    const { can, build } = new AbilityBuilder(createMongoAbility);
+
+    userData.roleDetails.forEach((role) => {
+      const rolePerms = userData.role_permission
+        .filter((rp) => rp.role_id === role._id)
+        .map((rp) => {
+          const perm = userData.permissions.find(
+            (p) => p._id === rp.permissions,
+          );
+          return perm ? perm.name : null;
+        })
+        .filter(Boolean) as string[];
+
+      rolePerms.forEach((permission) => {
+        // Split the permission to determine action and subject
+        const [subject, action] = permission.split('.'); // e.g., "students.manage" -> ["students", "manage"]
+        if (subject && action) {
+          can(action, subject.charAt(0).toUpperCase() + subject.slice(1)); // Capitalize subject for consistency
+        }
+      });
+    });
+
+    return build();
+  }
+
   async use(req: Request, resp: Response, next: NextFunction) {
     try {
       const token = this.extractTokenFromHeader(req);
@@ -35,7 +63,9 @@ export class AuthMiddleware implements NestMiddleware {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
+
       req['user'] = payload;
+      req['user']['permission'] = this.setUserPermission(payload);
       return next();
     } catch (error) {
       Logger.error(error);
