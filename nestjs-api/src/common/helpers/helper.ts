@@ -1,6 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { UserData } from '../dto/index.dto';
 
+import { promises as fs } from 'fs';
+import { join } from 'path';
+
 export const removeMongoDbFeilds = () => {
   return 'Abc';
 };
@@ -45,3 +48,20 @@ export const defaultCreatedAndUpdatedBy = (userId: ObjectId) => {
     updatedBy: userId,
   };
 };
+
+export async function writeJsonFile(
+  fileName: string,
+  data: object,
+): Promise<void> {
+  const jsonData = JSON.stringify(data, null, 2);
+  const filePath = join('D:', 'WorkSpace', 'Python', 'LearnPython', fileName);
+
+  console.log(filePath, 'FIle path');
+
+  try {
+    await fs.writeFile(filePath, jsonData);
+    console.log('JSON file has been written successfully');
+  } catch (err) {
+    console.error('Error writing file', err);
+  }
+}
