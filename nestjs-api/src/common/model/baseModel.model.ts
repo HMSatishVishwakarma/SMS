@@ -55,6 +55,10 @@ export abstract class BaseModel implements BaseModelInterface {
     return this.currentModel.find(where, projection);
   }
 
+  findAll(){
+    return this.currentModel.findAll()
+  }
+
   findById(id: string, projection = {}) {
     return this.currentModel.findById(id, projection);
   }
