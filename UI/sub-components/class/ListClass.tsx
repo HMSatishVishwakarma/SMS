@@ -13,111 +13,31 @@ const ListClasses = () => {
   const [loading, setLoading] = useState<boolean>(true); // Track loading state
   const [error, setError] = useState<string | null>(null); // Track error state
 
+  const [files, setFiles] = useState([]);
+
   useEffect(() => {
-    const fetchHeaderConfig = async () => {
+    const fetchData = async () => {
       try {
-        console.log('Fetching header config...');
-        const { data } = await axiosInstance.get(
-          'app-configuration/getHeaderConfig?tableName=classHeaderConfig',
-        );
+        const [headerResponse, classesResponse] = await Promise.all([
+          axiosInstance.get(
+            'app-configuration/getHeaderConfig?tableName=classHeaderConfig',
+          ),
+          axiosInstance.get('classes'),
+        ]);
 
-        console.log('Received headers:', data[0].headers); // Log the headers data
-
-        setHeaders(data[0].headers || []); // Set the headers in state
+        setHeaders(headerResponse.data[0].headers || []);
+        setFiles(classesResponse.data || []);
       } catch (error) {
-        console.error('Error fetching headers:', error);
-        setError('Failed to load headers'); // Set error message in case of failure
+        console.error('Error fetching data:', error);
       } finally {
-        setLoading(false); // Set loading to false once the fetch completes
+        setLoading(false); // Set loading to false once the fetch is complete
       }
     };
 
-    fetchHeaderConfig();
+    fetchData();
   }, []);
 
   const iconCursor = { cursor: 'pointer', marginLeft: '10px' };
-
-  const filesData = [
-    {
-      className: 'KG',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 1',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 2',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 3',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 4',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 5',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 6',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 7',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      className: 'Class 8',
-      status: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
-
-  const dataWithCellStyles: DataRow[] = [
-    {
-      profileImage: { value: 'John Doe' },
-      firstName: { value: 'Jane' },
-      lastName: { value: 'Smith' },
-      fatherName: { value: 'Mike' },
-      motherName: { value: 'Emily' },
-      class: { value: '10A' },
-      statusLabel: { value: 'Active' },
-      action: {
-        value: 'Actions',
-        components: [
-          <i
-            className="fa fa-eye fs-3 icon"
-            title="View"
-            style={iconCursor}
-          ></i>,
-
-          // Add more components for other actions as needed
-        ],
-      },
-    },
-    // Add more data rows as needed
-  ];
 
   // const debouncedSearch = useDebounce(filesData, 1000);
 
@@ -155,7 +75,7 @@ const ListClasses = () => {
               </tr>
             </thead>
             <tbody>
-              {filesData.map((file: any, index) => (
+              {files.map((file, index) => (
                 <tr key={index}>
                   {headers.map(
                     (header, headerIndex) =>
@@ -166,8 +86,8 @@ const ListClasses = () => {
                               ? 'Active'
                               : 'Inactive'
                             : header.select === 'createdAt' ||
-                                header.select === 'updatedAt'
-                              ? file[header.select]?.toLocaleString() // Corrected here
+                                header.fieldselectName === 'updatedAt'
+                              ? new Date(file[header.select])?.toLocaleString()
                               : file[header.select]}
                         </td>
                       ),
