@@ -51,21 +51,22 @@ export abstract class BaseModel implements BaseModelInterface {
   constructor(modelRef) {
     this.currentModel = modelRef;
   }
-  find(where: object, projection: object = {}) {
-    return this.currentModel.find(where, projection);
-  }
-
-  findAll(){
-    return this.currentModel.findAll()
-  }
-
-  findById(id: string, projection = {}) {
-    return this.currentModel.findById(id, projection);
-  }
 
   save(data: object) {
     const response = new this.currentModel(data);
     return response.save();
+  }
+  save2(data: object) {
+    const response = new this.currentModel(data);
+    return response.save();
+  }
+
+  find(where: object, projection: object = {}) {
+    return this.currentModel.find(where, projection);
+  }
+
+  findById(id: string, projection = {}) {
+    return this.currentModel.findById(id, projection);
   }
 
   findOne(condition: object, projection: object = {}) {

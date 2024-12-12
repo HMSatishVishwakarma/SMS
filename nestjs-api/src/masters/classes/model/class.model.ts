@@ -10,4 +10,8 @@ export class ClassesModel extends BaseModel {
   ) {
     super(classesModel);
   }
+
+  create(data: object) {
+    return this.save(data);
+  }
 }

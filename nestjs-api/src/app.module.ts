@@ -17,6 +17,7 @@ import { excludeRoutes } from './routes/excludeRoutes';
 import { Roles, RolesSchema } from './schemas/roles.schema';
 import { TeachersModule } from './teachers/teachers.module';
 import { ClassesModule } from './masters/classes/classes.module';
+import { AppConfigurationModule } from './app-configuration/app-configuration.module';
 
 @Module({
   imports: [
@@ -46,6 +47,8 @@ import { ClassesModule } from './masters/classes/classes.module';
     MongooseModule.forFeature([{ name: Roles.name, schema: RolesSchema }]),
 
     ClassesModule,
+
+    AppConfigurationModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService, RolesService, RolesModel],
