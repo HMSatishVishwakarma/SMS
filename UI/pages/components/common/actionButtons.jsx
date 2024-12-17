@@ -1,8 +1,14 @@
+import { Status } from '@/types/statusEnum';
 import { Button } from 'react-bootstrap';
 
-const ActionButtons = ({ actionList = {}, status = 0, onToggleStatus }) => {
+const ActionButtons = ({
+  actionList = {},
+  status = Status.Inactive, // Default to Inactive
+  onToggleStatus = () => {},
+}) => {
   const handleStatusToggle = () => {
-    const newStatus = status === 1 ? 0 : 1;
+    const newStatus =
+      status === Status.Active ? Status.Inactive : Status.Active;
     onToggleStatus(newStatus);
   };
 
@@ -10,11 +16,11 @@ const ActionButtons = ({ actionList = {}, status = 0, onToggleStatus }) => {
     <div>
       {actionList.status && (
         <Button
-          variant={status === 0 ? 'success' : 'secondary'}
+          variant={status === Status.Active ? 'success' : 'secondary'}
           className="me-1"
           onClick={handleStatusToggle}
         >
-          {status === 0 ? 'Active' : 'Inactive'}
+          {status === Status.Active ? 'Active' : 'Inactive'}
         </Button>
       )}
       {actionList.edit && (

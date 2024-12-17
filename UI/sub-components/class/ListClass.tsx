@@ -2,6 +2,7 @@ import { DialogOptions } from '@/components/comman/interface';
 import axiosInstance from '@/lib/axios-instance';
 import ActionButtons from '@/pages/components/common/actionButtons';
 import ConfirmBox from '@/pages/components/common/confirmModalBox';
+import { Status } from '@/types/statusEnum';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { Container, Form, Row, Table } from 'react-bootstrap';
@@ -90,7 +91,7 @@ const ListClasses = () => {
   }
 
   const hadleToggleStatus = (attr: any) => {
-    const title = attr === 1 ? 'agg' : 'Sfsd';
+    const title = attr === Status.Active ? 'agg' : 'Sfsd';
 
     setModelProps({
       body: `Are you sure you want to be ${title}?`,
