@@ -8,18 +8,11 @@ import PaginationComponent from '@/pages/components/common/Pagination';
 
 import Container from 'react-bootstrap/Container';
 
+import { DialogOptions } from '@/components/comman/interface';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { Form } from 'react-bootstrap';
 import Row from 'react-bootstrap/Row';
-
-interface DialogOptions {
-  cancelText?: string;
-  okText?: string;
-  title?: string;
-  body?: string;
-  actionType?: string;
-}
 
 type CallbackFunction<T> = (...args: T[]) => void;
 

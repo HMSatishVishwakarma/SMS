@@ -9,6 +9,8 @@ const ConfirmBox = (props: any) => {
     actionType = 'delete',
   } = props;
 
+  console.info(`Props Value : ${JSON.stringify(props, null, 2)}`);
+
   return (
     <Modal {...props} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>

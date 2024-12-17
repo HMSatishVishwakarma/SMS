@@ -7,3 +7,11 @@ export interface fileInterFace {
   filename: string;
   size: number;
 }
+
+export interface DialogOptions {
+  cancelText?: string;
+  okText?: string;
+  title?: string;
+  body?: string;
+  actionType?: string;
+}

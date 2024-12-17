@@ -18,3 +18,11 @@ interface DynamicTableProps {
   headers: Header[];
   dataWithCellStyles: DataRow[];
 }
+
+export interface DialogOptions {
+  cancelText?: string;
+  okText?: string;
+  title?: string;
+  body?: string;
+  actionType?: string;
+}
