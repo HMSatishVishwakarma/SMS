@@ -18,6 +18,7 @@ async function bootstrap() {
       skipMissingProperties: false, // if true, request can omit (or include as null or undefined) properties defined in the DTO
       enableDebugMessages: config.get('enableDebugMessage'),
       transform: true,
+      forbidNonWhitelisted: false,
     }),
   );
 

@@ -2,7 +2,7 @@ import { DialogOptions } from '@/components/comman/interface';
 import axiosInstance from '@/lib/axios-instance';
 import ActionButtons from '@/pages/components/common/actionButtons';
 import ConfirmBox from '@/pages/components/common/confirmModalBox';
-import { Status } from '@/types/statusEnum';
+import { getStatusKeyByValue } from '@/utils';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { Container, Form, Row, Table } from 'react-bootstrap';
@@ -22,32 +22,18 @@ const ListClasses = () => {
 
   const [modalShow, setModalShow] = useState(false);
 
+  const [rowId, setRowId] = useState('');
+
   const [files, setFiles] = useState([]);
 
   const onConfirm = async (actionType: number) => {
     try {
-      console.log(actionType);
-      // setLoading(true);
-      // let response: any = '';
-      // switch (actionType.toLowerCase()) {
-      //   case 'active':
-      //     response = await axiosInstance.put('students/' + selectedId, {
-      //       status: 1,
-      //     });
-      //     break;
-      //   case 'inactive':
-      //     response = await axiosInstance.put('students/' + selectedId, {
-      //       status: 2,
-      //     });
-      //     break;
-      //   case 'delete':
-      //     response = await axiosInstance.delete('students/' + selectedId);
-      //     break;
-      // }
-      // toast.success(response.data);
-      // setModalShow(false);
-      // getStudentList();
-      // setLoading(false);
+      await axiosInstance.put('classes/updateStatus/' + rowId, {
+        status: actionType,
+      });
+
+      fetchData();
+      setModalShow(false);
     } catch (error: any) {
       // toast.error(error?.message);
     }
@@ -57,30 +43,28 @@ const ListClasses = () => {
     setModalShow(false);
   };
 
+  const fetchData = async () => {
+    try {
+      const [headerResponse, classesResponse] = await Promise.all([
+        axiosInstance.get(
+          'app-configuration/getHeaderConfig?tableName=classHeaderConfig',
+        ),
+        axiosInstance.get('classes'),
+      ]);
+
+      setHeaders(headerResponse.data[0].headers || []);
+      setActions(headerResponse.data[0].actionList || []);
+      setFiles(classesResponse.data || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Set loading to false once the fetch is complete
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [headerResponse, classesResponse] = await Promise.all([
-          axiosInstance.get(
-            'app-configuration/getHeaderConfig?tableName=classHeaderConfig',
-          ),
-          axiosInstance.get('classes'),
-        ]);
-
-        setHeaders(headerResponse.data[0].headers || []);
-        setActions(headerResponse.data[0].actionList || []);
-        setFiles(classesResponse.data || []);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false); // Set loading to false once the fetch is complete
-      }
-    };
-
     fetchData();
   }, []);
-
-  const iconCursor = { cursor: 'pointer', marginLeft: '10px' };
 
   function handleDelete(id: any): void {
     throw new Error('Function not implemented.');
@@ -91,15 +75,15 @@ const ListClasses = () => {
   }
 
   const hadleToggleStatus = (attr: any) => {
-    const title = attr === Status.Active ? 'agg' : 'Sfsd';
+    const title = getStatusKeyByValue(attr.status);
 
     setModelProps({
       body: `Are you sure you want to be ${title}?`,
-      actionType: title.toLowerCase(),
+      actionType: attr.status,
     });
 
+    setRowId(attr._id);
     setModalShow(true);
-    console.log(attr);
   };
 
   // const debouncedSearch = useDebounce(filesData, 1000);
@@ -149,13 +133,13 @@ const ListClasses = () => {
                             'Inactive'
                           )
                         ) : header.select === 'createdAt' ||
-                          header.fieldselectName === 'updatedAt' ? (
+                          header.select === 'updatedAt' ? (
                           new Date(file[header.select]).toLocaleString()
                         ) : header.select === 'actions' ? (
                           // Add Action Buttons for this row
                           <ActionButtons
                             actionList={actions}
-                            status={file.status}
+                            data={file}
                             onToggleStatus={hadleToggleStatus}
                           />
                         ) : (

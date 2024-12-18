@@ -1,7 +1,8 @@
+import { objectIdDto } from '@app/common/dto/common.dto';
 import { Classes } from '@app/schemas/classes.schema';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ClassesService } from './classes.service';
-import { CreateClassDto } from './dto/classes.dto';
+import { CreateClassDto, StatusUpdateDTO } from './dto/classes.dto';
 
 @Controller('classes')
 export class ClassesController {
@@ -15,5 +16,13 @@ export class ClassesController {
   @Post()
   async create(@Body() body: CreateClassDto): Promise<CreateClassDto> {
     return this.classesService.create(body);
+  }
+
+  @Put('updateStatus/:id')
+  async updateStatus(
+    @Param('id') id: objectIdDto,
+    @Body() body: StatusUpdateDTO,
+  ) {
+    return this.classesService.updateStatus(id, body);
   }
 }

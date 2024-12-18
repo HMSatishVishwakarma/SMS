@@ -3,24 +3,26 @@ import { Button } from 'react-bootstrap';
 
 const ActionButtons = ({
   actionList = {},
-  status = Status.Inactive, // Default to Inactive
+  data = {},
   onToggleStatus = () => {},
 }) => {
+  console.log('Data, 0000000000', data);
+
   const handleStatusToggle = () => {
     const newStatus =
-      status === Status.Active ? Status.Inactive : Status.Active;
-    onToggleStatus(newStatus);
+      data.status === Status.Active ? Status.InActive : Status.Active;
+    onToggleStatus({ status: newStatus, _id: data._id });
   };
 
   return (
     <div>
       {actionList.status && (
         <Button
-          variant={status === Status.Active ? 'success' : 'secondary'}
+          variant={data.status === Status.InActive ? 'success' : 'secondary'}
           className="me-1"
           onClick={handleStatusToggle}
         >
-          {status === Status.Active ? 'Active' : 'Inactive'}
+          {data.status === Status.InActive ? 'Active' : 'Inactive'}
         </Button>
       )}
       {actionList.edit && (

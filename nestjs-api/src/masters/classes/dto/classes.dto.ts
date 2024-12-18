@@ -18,3 +18,21 @@ export class CreateClassDto {
   @IsOptional()
   updatedAt: Date;
 }
+
+export class StatusUpdateDTO {
+  @IsString()
+  @IsOptional()
+  className: string;
+
+  @IsEnum(STATUS)
+  @IsOptional()
+  status: STATUS;
+
+  @IsDate()
+  @IsOptional()
+  createdAt: Date;
+
+  @IsDate()
+  @IsOptional()
+  updatedAt: Date;
+}

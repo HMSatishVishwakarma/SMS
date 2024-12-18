@@ -1,7 +1,8 @@
+import { objectIdDto } from '@app/common/dto/common.dto';
 import { Classes } from '@app/schemas/classes.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateClassDto } from './dto/classes.dto';
+import { CreateClassDto, StatusUpdateDTO } from './dto/classes.dto';
 import { ClassesModel } from './model/class.model';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class ClassesService {
   ) {}
 
   async findAll(): Promise<Classes[]> {
-    return this.classModel.find({});
+    return this.classModel.find({ status: { $ne: 0 } });
   }
 
   async create({ className, status }: CreateClassDto) {
@@ -20,6 +21,12 @@ export class ClassesService {
       status,
       createdBy: new Date(),
       updatedBy: new Date(),
+    });
+  }
+
+  async updateStatus(id: objectIdDto, body: StatusUpdateDTO) {
+    return this.classModel.findByIdAndUpdate(id, {
+      status: body.status,
     });
   }
 }
