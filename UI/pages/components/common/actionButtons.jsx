@@ -1,17 +1,26 @@
 import { Status } from '@/types/statusEnum';
 import { Button } from 'react-bootstrap';
 
-const ActionButtons = ({
-  actionList = {},
-  data = {},
-  onToggleStatus = () => {},
-}) => {
-  console.log('Data, 0000000000', data);
+const ActionButtons = ({ data, actionList, onAction }) => {
+  // Combined handler to manage button clicks
+  const handleActionClick = (actionType) => {
+    console.log('--------------->', actionType === 'status');
 
-  const handleStatusToggle = () => {
-    const newStatus =
-      data.status === Status.Active ? Status.InActive : Status.Active;
-    onToggleStatus({ status: newStatus, _id: data._id });
+    switch (actionType) {
+      case 'status':
+        const newStatus =
+          data.status === Status.Active ? Status.InActive : Status.Active;
+        onAction({ type: 'status', value: newStatus, _id: data._id });
+        break;
+      case 'edit':
+        onAction({ type: 'edit', _id: data._id });
+        break;
+      case 'delete':
+        onAction({ value: 0, type: 'delete', _id: data._id });
+        break;
+      default:
+        console.warn('Unknown action---->');
+    }
   };
 
   return (
@@ -20,18 +29,26 @@ const ActionButtons = ({
         <Button
           variant={data.status === Status.InActive ? 'success' : 'secondary'}
           className="me-1"
-          onClick={handleStatusToggle}
+          onClick={() => handleActionClick('status')}
         >
           {data.status === Status.InActive ? 'Active' : 'Inactive'}
         </Button>
       )}
       {actionList.edit && (
-        <Button variant="warning" className="me-1">
+        <Button
+          variant="warning"
+          className="me-1"
+          onClick={() => handleActionClick('edit')}
+        >
           Edit
         </Button>
       )}
       {actionList.delete && (
-        <Button variant="danger" className="me-1">
+        <Button
+          variant="danger"
+          className="me-1"
+          onClick={() => handleActionClick('delete')}
+        >
           Delete
         </Button>
       )}

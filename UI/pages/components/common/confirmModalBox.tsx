@@ -7,6 +7,7 @@ const ConfirmBox = (props: any) => {
     title = 'Confirm',
     body = 'Are you sure you want to delete?',
     actionType = 'delete',
+    showFooter = true,
   } = props;
 
   console.info(`Props Value : ${JSON.stringify(props, null, 2)}`);
@@ -17,10 +18,13 @@ const ConfirmBox = (props: any) => {
         <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{body}</Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onHide}>{cancelText}</Button>
-        <Button onClick={() => props.onConfirm(actionType)}>{okText}</Button>
-      </Modal.Footer>
+
+      {showFooter && (
+        <Modal.Footer>
+          <Button onClick={props.onHide}>{cancelText}</Button>
+          <Button onClick={() => props.onConfirm(actionType)}>{okText}</Button>
+        </Modal.Footer>
+      )}
     </Modal>
   );
 };

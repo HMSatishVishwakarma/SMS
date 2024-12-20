@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { Container, Form, Row, Table } from 'react-bootstrap';
 import { Toaster } from 'react-hot-toast';
+import AddClass from './addClass';
 
 const LoadingSpinner = dynamic(() => import('@/components/comman/loader'), {
   ssr: false,
@@ -66,33 +67,39 @@ const ListClasses = () => {
     fetchData();
   }, []);
 
-  function handleDelete(id: any): void {
-    throw new Error('Function not implemented.');
-  }
+  const handleAction = (actionData: {
+    type: string;
+    _id: string;
+    value: string;
+  }) => {
+    switch (actionData.type) {
+      case 'delete':
+      case 'status':
+        const title = getStatusKeyByValue(actionData.value);
 
-  function handleEdit(file: never): void {
-    throw new Error('Function not implemented.');
-  }
+        setModelProps({
+          body: `Are you sure you want to be ${title}?`,
+          actionType: actionData.value,
+        });
 
-  const hadleToggleStatus = (attr: any) => {
-    const title = getStatusKeyByValue(attr.status);
+        setRowId(actionData._id);
+        setModalShow(true);
+        break;
+      case 'edit':
+        setModelProps({
+          okText: 'Submit',
 
-    setModelProps({
-      body: `Are you sure you want to be ${title}?`,
-      actionType: attr.status,
-    });
+          title: 'Edit Class',
+          body: <AddClass />,
+          actionType: actionData.value,
+        });
+        setModalShow(true);
+        break;
 
-    setRowId(attr._id);
-    setModalShow(true);
+      default:
+        console.warn('Unknown action');
+    }
   };
-
-  // const debouncedSearch = useDebounce(filesData, 1000);
-
-  // const handleSearchBox = (event: any) => {
-  //   const { value }: any = event.target;
-
-  //   debouncedSearch(value);
-  // };
 
   return (
     <>
@@ -107,6 +114,7 @@ const ListClasses = () => {
             />
           </Form>
         </div>
+        <div className="fw-semi-bold mb-1"> Add Classes</div>
       </div>
       <Toaster position="top-right" reverseOrder={false} />
 
@@ -140,7 +148,7 @@ const ListClasses = () => {
                           <ActionButtons
                             actionList={actions}
                             data={file}
-                            onToggleStatus={hadleToggleStatus}
+                            onAction={handleAction}
                           />
                         ) : (
                           file[header.select]

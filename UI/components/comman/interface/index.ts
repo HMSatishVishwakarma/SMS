@@ -23,6 +23,6 @@ export interface DialogOptions {
   cancelText?: string;
   okText?: string;
   title?: string;
-  body?: string;
+  body?: any;
   actionType?: string;
 }
