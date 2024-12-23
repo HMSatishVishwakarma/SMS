@@ -9,7 +9,9 @@ describe('AppConfigurationController', () => {
       controllers: [AppConfigurationController],
     }).compile();
 
-    controller = module.get<AppConfigurationController>(AppConfigurationController);
+    controller = module.get<AppConfigurationController>(
+      AppConfigurationController,
+    );
   });
 
   it('should be defined', () => {

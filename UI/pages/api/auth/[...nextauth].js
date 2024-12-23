@@ -19,7 +19,7 @@ export const authOptions = {
         const url = config?.apiBaseUrl + '/auth/login';
 
         try {
-          console.log("->" ,  url)
+          console.log('->', url);
           const response = await axios.post(url, payload);
 
           //    console.log(response.data, 'response.data');
@@ -40,7 +40,7 @@ export const authOptions = {
     }),
   ],
 
-  port: 8081,
+  port: 8082,
   pages: {
     signIn: '/',
     signOut: '/',

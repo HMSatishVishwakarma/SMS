@@ -1,96 +1,120 @@
-import { ErrorMessage, Formik } from 'formik';
-import { useState } from 'react';
-import { Col, Form, Row } from 'react-bootstrap';
+import axiosInstance from '@/lib/axios-instance';
+import { validationAddClassSchema } from '@/validation';
+import { ErrorMessage, Field, Formik } from 'formik';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import { Toaster } from 'react-hot-toast';
 
-interface FormProps {
-  labelClassName?: string;
-  inputClassName?: string;
-  onSubmit: (formData: { [key: string]: string }) => void;
+const initialValue = { className: '', status: 1 };
+
+interface FormValues {
+  className: string;
+  status: number;
 }
 
-const AddClass: React.FC<FormProps> = ({
-  labelClassName,
-  inputClassName,
-  onSubmit,
-}) => {
-  const [formData, setFormData] = useState({ name: '', email: '' });
+const AddClass = (props: any) => {
+  const handleSubmit = async (values: FormValues) => {
+    console.log(values, '-------sdfsdfsd---------');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
+    try {
+      const response: any = await axiosInstance.post('classes', values);
+      props.onClick(response);
+    } catch (error) {
+      props.onClick('Error');
+    }
   };
 
   return (
     <Row className="justify-content-center mb-8">
       <Col xl={9} lg={8} md={12} xs={12}>
-        {/* card */}
-
-        {/* card body */}
-
         <Toaster position="top-right" reverseOrder={false} />
-
-        <Formik>
-          {({}) => (
+        <Formik
+          initialValues={initialValue}
+          validationSchema={validationAddClassSchema}
+          onSubmit={handleSubmit}
+        >
+          {({
+            values,
+            handleChange,
+            handleSubmit,
+            isValid,
+            dirty,
+            setFieldValue,
+          }) => (
             <Form onSubmit={handleSubmit}>
-              {/* New email */}
-
               <Row className="mb-3">
-                <Form.Label className="col-sm-4" htmlFor="ClassName">
-                  ClassName :
+                <Form.Label className="col-sm-4" htmlFor="className">
+                  ClassName:
                 </Form.Label>
                 <Col md={8} xs={12}>
-                  <Form.Control
-                    // value={values.firstName}
+                  <Field
                     type="text"
-                    name="classeName"
+                    name="className"
                     onChange={handleChange}
                     placeholder="Enter your class name"
-                    id="classeName"
+                    value={values.className}
+                    id="className"
+                    className="form-control"
                   />
-
-                  <ErrorMessage name="classeName" component="div" />
+                  <ErrorMessage
+                    name="className"
+                    component="div"
+                    className="error-message"
+                  />
                 </Col>
               </Row>
+
               <Row className="mb-3">
-                <Form.Label className="col-md-4" htmlFor="default">
-                  Status :
+                <Form.Label className="col-md-4" htmlFor="status">
+                  Status:
                 </Form.Label>
                 <Col md={8} xs={12}>
-                  <Form.Check
-                    id="customRadioInline1"
-                    className="form-check-inline"
-                  >
-                    <Form.Check.Input
+                  <div className="form-check form-check-inline">
+                    <Field
                       type="radio"
                       id="active"
-                      value="1"
-                      onChange={handleChange}
                       name="status"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setFieldValue('status', Number(e.target.value));
+                      }}
+                      value={1}
+                      className="form-check-input"
                     />
-                    <Form.Check.Label>Active</Form.Check.Label>
-                  </Form.Check>
-                  <Form.Check
-                    id="customRadioInline2"
-                    className="form-check-inline"
-                  >
-                    <Form.Check.Input
-                      id="inactive"
-                      value="2"
+                    <label htmlFor="active" className="form-check-label">
+                      Active
+                    </label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <Field
                       type="radio"
-                      onChange={handleChange}
+                      id="inactive"
                       name="status"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setFieldValue('status', Number(e.target.value));
+                      }}
+                      value={2}
+                      className="form-check-input"
                     />
-                    <Form.Check.Label>InActive</Form.Check.Label>
-                    <ErrorMessage name="status" component="div" />
-                  </Form.Check>
+                    <label htmlFor="inactive" className="form-check-label">
+                      Inactive
+                    </label>
+                  </div>
+                  <ErrorMessage
+                    name="status"
+                    component="div"
+                    className="error-message"
+                  />
+                </Col>
+              </Row>
+
+              <Row className="mt-4">
+                <Col>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={!(isValid && dirty)}
+                  >
+                    Submit
+                  </Button>
                 </Col>
               </Row>
             </Form>

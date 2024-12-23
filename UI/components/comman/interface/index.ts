@@ -25,4 +25,5 @@ export interface DialogOptions {
   title?: string;
   body?: any;
   actionType?: string;
+  showFooter?: boolean;
 }

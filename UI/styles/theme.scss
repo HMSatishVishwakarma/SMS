@@ -12,7 +12,7 @@
 
 // Font Awesome
 // @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css');
- @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
 
 // Feathers CSS for Before Icon
 @import url('/fonts/feather-icons/feather.css');
@@ -58,8 +58,12 @@
   .validation-error-message {
     color: red !important;
   }
+  .error-message {
+    color: red;
+    font-size: 0.875rem; /* optional, adjust to your liking */
+  }
 
   .icon-container i {
     margin-right: 10px; /* Adjust the right margin as needed */
-}
+  }
 }

@@ -1,1 +1,2 @@
-export * from "./addStuden";
+export * from './addClass';
+export * from './addStuden';

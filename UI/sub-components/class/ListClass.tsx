@@ -5,8 +5,8 @@ import ConfirmBox from '@/pages/components/common/confirmModalBox';
 import { getStatusKeyByValue } from '@/utils';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import { Container, Form, Row, Table } from 'react-bootstrap';
-import { Toaster } from 'react-hot-toast';
+import { Button, Container, Form, Row, Table } from 'react-bootstrap';
+import toast, { Toaster } from 'react-hot-toast';
 import AddClass from './addClass';
 
 const LoadingSpinner = dynamic(() => import('@/components/comman/loader'), {
@@ -92,6 +92,7 @@ const ListClasses = () => {
           title: 'Edit Class',
           body: <AddClass />,
           actionType: actionData.value,
+          showFooter: false,
         });
         setModalShow(true);
         break;
@@ -101,20 +102,50 @@ const ListClasses = () => {
     }
   };
 
+  const addFormSubmit = (response: any) => {
+    if (response.status) {
+      fetchData();
+      toast.success('Class added successfully.');
+      setModalShow(false);
+    } else {
+      toast.error('Error');
+    }
+  };
+
+  const handleAddClassBtn = () => {
+    setModelProps({
+      okText: 'Submit',
+
+      title: 'Add Class',
+      body: <AddClass onClick={addFormSubmit} />,
+      actionType: 'addClass',
+      showFooter: false,
+    });
+    setModalShow(true);
+  };
+
   return (
     <>
       <div className="d-flex justify-content-between w-100">
+        {/* Search Form */}
         <div className="ms-lg-3 d-none d-md-none d-lg-block">
-          {/* Search Form */}
           <Form className="d-flex align-items-center">
             <Form.Control
               type="search"
-              // onChange={handleSearchBox}
               placeholder="Search"
+              // onChange={handleSearchBox}
             />
           </Form>
         </div>
-        <div className="fw-semi-bold mb-1"> Add Classes</div>
+
+        {/* Using <a> Tag for Navigation */}
+        <div className="fw-semi-bold mb-1">
+          <a>
+            <Button onClick={handleAddClassBtn} variant="primary">
+              Add Class
+            </Button>
+          </a>
+        </div>
       </div>
       <Toaster position="top-right" reverseOrder={false} />
 

@@ -10,6 +10,8 @@ import SessionManager from './SessionManager';
 // import theme style scss file
 import './../styles/theme.scss';
 
+import '@/styles/styles.scss';
+
 // import default layouts
 import DefaultDashboardLayout from '@/layouts/DefaultDashboardLayout';
 import { Provider } from 'react-redux';
