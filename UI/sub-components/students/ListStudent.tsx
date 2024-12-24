@@ -9,6 +9,7 @@ import PaginationComponent from '@/pages/components/common/Pagination';
 import Container from 'react-bootstrap/Container';
 
 import { DialogOptions } from '@/components/comman/interface';
+import OverlayLoader from '@/pages/components/OverlayModal';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { Form } from 'react-bootstrap';
@@ -67,9 +68,10 @@ const StudentList = () => {
         `students?limit=${limit}&page=${currentPage}&searchText=${value}`,
       );
       setStudentList(response.data);
-      setLoading(false);
     } catch (error: any) {
       toast.error(error?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -164,6 +166,7 @@ const StudentList = () => {
 
   return (
     <>
+      <OverlayLoader loading={loading} />
       <Container fluid>
         <div className="d-flex justify-content-between w-100">
           <div className="ms-lg-3 d-none d-md-none d-lg-block">
@@ -196,7 +199,7 @@ const StudentList = () => {
               </tr>
             </thead>
             <tbody>
-              {listStudent.data ? (
+              {listStudent?.data &&
                 listStudent?.data.map((student: any, index: number) => (
                   <tr key={index}>
                     <th scope="row">
@@ -253,10 +256,7 @@ const StudentList = () => {
                       ></i>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <LoadingSpinner />
-              )}
+                ))}
             </tbody>
           </Table>
 

@@ -2,6 +2,7 @@ import { DialogOptions } from '@/components/comman/interface';
 import axiosInstance from '@/lib/axios-instance';
 import ActionButtons from '@/pages/components/common/actionButtons';
 import ConfirmBox from '@/pages/components/common/confirmModalBox';
+import OverlayLoader from '@/pages/components/OverlayModal';
 import { getStatusKeyByValue } from '@/utils';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
@@ -56,6 +57,7 @@ const ListClasses = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const [headerResponse, classesResponse] = await Promise.all([
         axiosInstance.get(
           'app-configuration/getHeaderConfig?tableName=classHeaderConfig',
@@ -141,6 +143,7 @@ const ListClasses = () => {
 
   return (
     <>
+      <OverlayLoader loading={loading} />
       <div className="d-flex justify-content-between w-100">
         {/* Search Form */}
         <div className="ms-lg-3 d-none d-md-none d-lg-block">

@@ -14,6 +14,7 @@ import DateRangePicker from 'react-bootstrap-daterangepicker';
 import axiosInstance from '@/lib/axios-instance';
 import { useRouter } from 'next/router';
 
+import { getAllClasses } from '@/ services/apiService';
 import { useEffect, useState } from 'react';
 import { DropFiles } from './../../widgets';
 
@@ -51,6 +52,8 @@ const AddStudent = () => {
 
   const [initValue, setInitValue] = useState(initialValues);
 
+  const [classData, setClassData] = useState([]);
+
   const fetchStudentDetailsById = async (id: any) => {
     if (id) {
       const response: any = await axiosInstance.get('students/' + id);
@@ -60,6 +63,16 @@ const AddStudent = () => {
       setInitValue(initialValues);
     }
   };
+
+  const getAllClassesData = async () => {
+    const response = await getAllClasses();
+
+    setClassData(response.data);
+  };
+
+  useEffect(() => {
+    getAllClassesData();
+  }, []);
 
   useEffect(() => {
     fetchStudentDetailsById(id);
@@ -245,11 +258,13 @@ const AddStudent = () => {
                         aria-label="Default select example"
                       >
                         <option value="">Please select</option>
-                        {classList.map((i) => (
-                          <option key={i} value={i}>
-                            {ordinal_suffix_of(i)}
-                          </option>
-                        ))}
+                        {classData.map(
+                          (i: { _id: string; className: string }) => (
+                            <option key={i._id} value={i._id}>
+                              {i.className}
+                            </option>
+                          ),
+                        )}
                       </Form.Select>
                       <ErrorMessage name="class" component="div" />
                     </Col>

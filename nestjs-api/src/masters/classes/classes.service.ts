@@ -29,6 +29,7 @@ export class ClassesService {
   async updateStatus(id: objectIdDto, body: StatusUpdateDTO) {
     return this.classModel.findByIdAndUpdate(id, {
       status: body.status,
+      updatedAt: new Date(),
     });
   }
 
@@ -37,6 +38,8 @@ export class ClassesService {
   }
 
   async updateClass(id: objectIdDto, body: StatusUpdateDTO) {
+    body.updatedAt = new Date();
+
     await this.classModel.findByIdAndUpdate(id, body);
 
     return 'Data Updated successfully.';
