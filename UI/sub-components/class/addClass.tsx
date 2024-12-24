@@ -4,22 +4,34 @@ import { ErrorMessage, Field, Formik } from 'formik';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { Toaster } from 'react-hot-toast';
 
-const initialValue = { className: '', status: 1 };
-
 interface FormValues {
   className: string;
   status: number;
 }
 
-const AddClass = (props: any) => {
-  const handleSubmit = async (values: FormValues) => {
-    console.log(values, '-------sdfsdfsd---------');
+const AddClass = ({ onClick, initialValues }: any) => {
+  const defaultValues = {
+    className: '', // Default empty string for className
+    status: 1, // Default status 'Active'
+  };
 
+  // Merge defaultValues with initialValues from props
+  const mergedValues = { ...defaultValues, ...initialValues };
+
+  const handleSubmit = async (values: FormValues) => {
     try {
-      const response: any = await axiosInstance.post('classes', values);
-      props.onClick(response);
+      let response = '';
+      if (mergedValues && mergedValues._id) {
+        response = await axiosInstance.put(
+          `classes/${mergedValues._id}`,
+          values,
+        );
+      } else {
+        response = await axiosInstance.post('classes', values);
+      }
+      onClick(response);
     } catch (error) {
-      props.onClick('Error');
+      onClick('Error');
     }
   };
 
@@ -28,7 +40,7 @@ const AddClass = (props: any) => {
       <Col xl={9} lg={8} md={12} xs={12}>
         <Toaster position="top-right" reverseOrder={false} />
         <Formik
-          initialValues={initialValue}
+          initialValues={mergedValues}
           validationSchema={validationAddClassSchema}
           onSubmit={handleSubmit}
         >

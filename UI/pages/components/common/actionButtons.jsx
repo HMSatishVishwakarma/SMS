@@ -4,8 +4,6 @@ import { Button } from 'react-bootstrap';
 const ActionButtons = ({ data, actionList, onAction }) => {
   // Combined handler to manage button clicks
   const handleActionClick = (actionType) => {
-    console.log('--------------->', actionType === 'status');
-
     switch (actionType) {
       case 'status':
         const newStatus =

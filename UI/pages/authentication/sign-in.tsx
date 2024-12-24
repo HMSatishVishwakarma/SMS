@@ -49,8 +49,6 @@ const SignIn = () => {
                     password: 'Test@123',
                   });
 
-                  console.log(response?.error, 'response');
-
                   if (response?.status == 200) {
                     setTimeout(() => {
                       toast.success('Login successfully.');

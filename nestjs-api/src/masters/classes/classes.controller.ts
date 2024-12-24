@@ -14,7 +14,7 @@ export class ClassesController {
   }
 
   @Post()
-  async create(@Body() body: CreateClassDto): Promise<CreateClassDto> {
+  async create(@Body() body: CreateClassDto): Promise<string> {
     return this.classesService.create(body);
   }
 
@@ -24,5 +24,18 @@ export class ClassesController {
     @Body() body: StatusUpdateDTO,
   ) {
     return this.classesService.updateStatus(id, body);
+  }
+
+  @Get(':id')
+  getClassById(@Param('id') id: objectIdDto) {
+    return this.classesService.getClassById(id);
+  }
+
+  @Put(':id')
+  async updateClass(
+    @Param('id') id: objectIdDto,
+    @Body() body: StatusUpdateDTO,
+  ) {
+    return this.classesService.updateClass(id, body);
   }
 }

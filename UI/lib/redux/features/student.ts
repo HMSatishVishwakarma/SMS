@@ -24,7 +24,6 @@ export const studentSlice = createSlice({
       statstate.studenList.push(action.payload);
     },
     listStudent: (state) => {
-      console.log(state, '-------------');
       state;
     },
   },

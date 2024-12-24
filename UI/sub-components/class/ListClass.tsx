@@ -33,6 +33,12 @@ const ListClasses = () => {
         status: actionType,
       });
 
+      if (actionType === 0) {
+        toast.success('Data deleted successFully');
+      } else {
+        toast.success('Status updated successfully.');
+      }
+
       fetchData();
       setModalShow(false);
     } catch (error: any) {
@@ -42,6 +48,10 @@ const ListClasses = () => {
 
   const hideModal = () => {
     setModalShow(false);
+  };
+
+  const getClassById = async (id: string): Promise<any> => {
+    return await axiosInstance.get(`classes/${id}`);
   };
 
   const fetchData = async () => {
@@ -67,7 +77,7 @@ const ListClasses = () => {
     fetchData();
   }, []);
 
-  const handleAction = (actionData: {
+  const handleAction = async (actionData: {
     type: string;
     _id: string;
     value: string;
@@ -86,11 +96,16 @@ const ListClasses = () => {
         setModalShow(true);
         break;
       case 'edit':
+        const response: any = await getClassById(actionData._id);
+
+        const data = response.data;
+
+        setRowId(actionData._id);
         setModelProps({
           okText: 'Submit',
 
           title: 'Edit Class',
-          body: <AddClass />,
+          body: <AddClass initialValues={data} onClick={addFormSubmit} />,
           actionType: actionData.value,
           showFooter: false,
         });
@@ -105,7 +120,7 @@ const ListClasses = () => {
   const addFormSubmit = (response: any) => {
     if (response.status) {
       fetchData();
-      toast.success('Class added successfully.');
+      toast.success(response.data);
       setModalShow(false);
     } else {
       toast.error('Error');

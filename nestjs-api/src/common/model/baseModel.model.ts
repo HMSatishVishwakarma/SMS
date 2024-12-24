@@ -61,8 +61,16 @@ export abstract class BaseModel implements BaseModelInterface {
     return response.save();
   }
 
-  find(where: object, projection: object = {}) {
-    return this.currentModel.find(where, projection);
+  find(where: object, projection: object = {}, sort = {}) {
+    console.log('000000000000000000', sort);
+
+    let response = this.currentModel.find(where, projection);
+
+    if (Object.keys(sort).length) {
+      response = response.sort(sort);
+    }
+
+    return response;
   }
 
   findById(id: string, projection = {}) {
