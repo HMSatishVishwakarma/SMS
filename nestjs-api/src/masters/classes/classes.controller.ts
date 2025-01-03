@@ -1,6 +1,7 @@
 import { objectIdDto } from '@app/common/dto/common.dto';
+import { PaginationParams } from '@app/common/interfaces';
 import { Classes } from '@app/schemas/classes.schema';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { CreateClassDto, StatusUpdateDTO } from './dto/classes.dto';
 
@@ -24,6 +25,18 @@ export class ClassesController {
     @Body() body: StatusUpdateDTO,
   ) {
     return this.classesService.updateStatus(id, body);
+  }
+
+  @Get('paginated')
+  async getPaginatedData(@Query() paginationParams: PaginationParams) {
+    const { page = 1, limit = 10 } = paginationParams;
+
+    const result = await this.classesService.getDataWithPagination(
+      { page, limit },
+      {}, // You can pass filters here if needed
+    );
+
+    return result;
   }
 
   @Get(':id')

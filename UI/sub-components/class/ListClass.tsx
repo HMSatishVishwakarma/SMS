@@ -68,7 +68,8 @@ const ListClasses = () => {
       setHeaders(headerResponse.data[0].headers || []);
       setActions(headerResponse.data[0].actionList || []);
       setFiles(classesResponse.data || []);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.message);
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false); // Set loading to false once the fetch is complete

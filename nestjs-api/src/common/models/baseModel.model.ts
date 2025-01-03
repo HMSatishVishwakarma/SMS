@@ -21,4 +21,25 @@ export abstract class BaseModel implements BaseModelInterface {
   findOne(condition: object) {
     return this.currentModel.findOne(condition);
   }
+
+  async countDocuments2(paginationParams, filterConditions) {
+    const { page, limit } = paginationParams;
+    const skip = (page - 1) * limit;
+
+    // First query to count total rows
+    const totalRows = await this.currentModel.countDocuments(filterConditions);
+
+    console.log(' ------------>', totalRows, filterConditions);
+
+    // Second query to get paginated data
+    const data = await this.currentModel
+      .find(filterConditions)
+      .skip(skip)
+      .limit(limit);
+
+    return {
+      data,
+      totalRows,
+    };
+  }
 }

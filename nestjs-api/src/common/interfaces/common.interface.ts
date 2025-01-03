@@ -7,3 +7,13 @@ export interface fileInterFace {
   filename: string;
   size: number;
 }
+
+export interface PaginationParams {
+  page: number;
+  limit: number;
+}
+
+export interface PaginationResponse<T> {
+  data: T[];
+  totalRows: number;
+}

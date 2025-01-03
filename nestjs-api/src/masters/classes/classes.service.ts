@@ -1,4 +1,5 @@
 import { objectIdDto } from '@app/common/dto/common.dto';
+import { PaginationParams } from '@app/common/interfaces';
 import { Classes } from '@app/schemas/classes.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,12 +12,16 @@ export class ClassesService {
     @InjectModel(Classes.name) private readonly classModel: ClassesModel,
   ) {}
 
-  async findAll(): Promise<Classes[]> {
-    return this.classModel.find({ status: { $ne: 0 } }, {}, { createdAt: 1 });
+  async findAll() {
+    return await this.classModel.find(
+      { status: { $ne: 0 } },
+      {},
+      { createdAt: 1 },
+    );
   }
 
   async create({ className, status }: CreateClassDto) {
-    await this.classModel.create({
+    await this.classModel.save({
       className,
       status,
       createdBy: new Date(),
@@ -43,5 +48,15 @@ export class ClassesService {
     await this.classModel.findByIdAndUpdate(id, body);
 
     return 'Data Updated successfully.';
+  }
+
+  getDataWithPagination(
+    paginationParams: PaginationParams,
+    filterConditions: object = {},
+  ) {
+    return this.classModel.findAllDataWithPagination(
+      paginationParams,
+      filterConditions,
+    );
   }
 }
