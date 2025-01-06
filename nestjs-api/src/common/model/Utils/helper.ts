@@ -12,3 +12,22 @@ export const applyLikeQuery = (filter: any) => {
 
   return updatedFilter;
 };
+
+export function applyDynamicOrFilter(filters: any[], likeKeys: string[]): any {
+  const orConditions: any[] = [];
+
+  filters.forEach((filter) => {
+    for (const key in filter) {
+      if (likeKeys.includes(key) && typeof filter[key] === 'string') {
+        // If the key should use a LIKE query, apply $regex for a case-insensitive match
+        orConditions.push({ [key]: { $regex: new RegExp(filter[key], 'i') } });
+      } else {
+        // Otherwise, use the exact match condition
+        orConditions.push(filter);
+      }
+    }
+  });
+
+  // Return the filter with the $or condition
+  return orConditions.length > 0 ? { $or: orConditions } : {};
+}
