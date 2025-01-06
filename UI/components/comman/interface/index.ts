@@ -27,3 +27,8 @@ export interface DialogOptions {
   actionType?: string;
   showFooter?: boolean;
 }
+
+export interface apiResponseType {
+  data: [];
+  totalCount: number;
+}

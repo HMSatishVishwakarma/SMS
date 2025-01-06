@@ -1,6 +1,7 @@
 import { BaseModelInterface } from '../interfaces/baseModel.interface';
 
 import { FilterQuery } from 'mongoose';
+import { applyLikeQuery } from './Utils/helper';
 
 interface WhereOptions {
   // Define your specific filter fields here
@@ -67,8 +68,6 @@ export abstract class BaseModel implements BaseModelInterface {
   }
 
   find(where: object, projection: object = {}, sort = {}) {
-    console.log('000000000000000000', sort);
-
     let response = this.currentModel.find(where, projection);
 
     if (Object.keys(sort).length) {
@@ -171,5 +170,36 @@ export abstract class BaseModel implements BaseModelInterface {
     aggregationPipeline.push({ $limit: limit });
 
     return await this.currentModel.aggregate(aggregationPipeline);
+  }
+
+  async getPaginatedData(
+    page: number = 1,
+    limit: number = 10,
+    filter: any = {},
+    projection: any = {},
+    sortBy: string = 'createdAt',
+    sortOrder: string = 'asc',
+  ) {
+    const skip = (page - 1) * limit;
+    const sort = sortOrder === 'desc' ? -1 : 1;
+
+    const filterWithLike = applyLikeQuery(filter);
+
+    const totalCount = await this.currentModel
+      .countDocuments(filterWithLike)
+      .exec();
+
+    const data = await this.currentModel
+      .find(filterWithLike)
+      .skip(skip)
+      .limit(limit)
+      .select(projection)
+      .sort({ [sortBy]: sort })
+      .exec();
+
+    return {
+      data,
+      totalCount,
+    };
   }
 }

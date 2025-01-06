@@ -15,5 +15,5 @@ export interface PaginationParams {
 
 export interface PaginationResponse<T> {
   data: T[];
-  totalRows: number;
+  totalCount: number;
 }

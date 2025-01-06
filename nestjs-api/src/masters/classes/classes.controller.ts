@@ -1,5 +1,5 @@
 import { objectIdDto } from '@app/common/dto/common.dto';
-import { PaginationParams } from '@app/common/interfaces';
+import { PaginationResponse } from '@app/common/interfaces';
 import { Classes } from '@app/schemas/classes.schema';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ClassesService } from './classes.service';
@@ -10,8 +10,29 @@ export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
 
   @Get()
-  async findAll(): Promise<Classes[]> {
-    return this.classesService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('filter') filter: string = '{}',
+    @Query('projection') projection: string = '',
+    @Query('sortBy') sortBy: string = 'createdAt',
+    @Query('sortOrder') sortOrder: string = 'asc',
+  ): Promise<PaginationResponse<Classes[]>> {
+    const parsedFilter = JSON.parse(filter);
+    const parsedProjection = projection
+      ? projection
+          .split(' ')
+          .reduce((acc, field) => ({ ...acc, [field]: 1 }), {})
+      : {};
+
+    return this.classesService.getDataWithPagination(
+      page,
+      limit,
+      parsedFilter,
+      parsedProjection,
+      sortBy,
+      sortOrder,
+    );
   }
 
   @Post()
@@ -25,18 +46,6 @@ export class ClassesController {
     @Body() body: StatusUpdateDTO,
   ) {
     return this.classesService.updateStatus(id, body);
-  }
-
-  @Get('paginated')
-  async getPaginatedData(@Query() paginationParams: PaginationParams) {
-    const { page = 1, limit = 10 } = paginationParams;
-
-    const result = await this.classesService.getDataWithPagination(
-      { page, limit },
-      {}, // You can pass filters here if needed
-    );
-
-    return result;
   }
 
   @Get(':id')

@@ -1,16 +1,11 @@
 import { objectIdDto } from '@app/common/dto/common.dto';
-import { PaginationParams } from '@app/common/interfaces';
-import { Classes } from '@app/schemas/classes.schema';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { CreateClassDto, StatusUpdateDTO } from './dto/classes.dto';
 import { ClassesModel } from './model/class.model';
 
 @Injectable()
 export class ClassesService {
-  constructor(
-    @InjectModel(Classes.name) private readonly classModel: ClassesModel,
-  ) {}
+  constructor(private readonly classModel: ClassesModel) {}
 
   async findAll() {
     return await this.classModel.find(
@@ -50,13 +45,14 @@ export class ClassesService {
     return 'Data Updated successfully.';
   }
 
-  getDataWithPagination(
-    paginationParams: PaginationParams,
-    filterConditions: object = {},
-  ) {
-    return this.classModel.findAllDataWithPagination(
-      paginationParams,
-      filterConditions,
+  getDataWithPagination(page, limit, filter, projection, sortBy, sortOrder) {
+    return this.classModel.getPaginatedData(
+      page,
+      limit,
+      filter,
+      projection,
+      sortBy,
+      sortOrder,
     );
   }
 }

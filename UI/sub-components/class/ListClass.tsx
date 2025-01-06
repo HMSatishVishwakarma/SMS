@@ -1,7 +1,8 @@
-import { DialogOptions } from '@/components/comman/interface';
+import { apiResponseType, DialogOptions } from '@/components/comman/interface';
 import axiosInstance from '@/lib/axios-instance';
 import ActionButtons from '@/pages/components/common/actionButtons';
 import ConfirmBox from '@/pages/components/common/confirmModalBox';
+import PaginationComponent from '@/pages/components/common/Pagination';
 import OverlayLoader from '@/pages/components/OverlayModal';
 import { getStatusKeyByValue } from '@/utils';
 import dynamic from 'next/dynamic';
@@ -20,13 +21,28 @@ const ListClasses = () => {
   const [loading, setLoading] = useState<boolean>(true); // Track loading state
   const [error, setError] = useState<string | null>(null); // Track error state
 
+  const [pageLimit, setPageLimit] = useState();
+
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [modelProps, setModelProps] = useState<DialogOptions>({});
 
   const [modalShow, setModalShow] = useState(false);
 
   const [rowId, setRowId] = useState('');
 
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<apiResponseType>({
+    data: [],
+    totalCount: 0,
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]);
 
   const onConfirm = async (actionType: number) => {
     try {
@@ -58,16 +74,21 @@ const ListClasses = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [headerResponse, classesResponse] = await Promise.all([
-        axiosInstance.get(
-          'app-configuration/getHeaderConfig?tableName=classHeaderConfig',
-        ),
-        axiosInstance.get('classes'),
-      ]);
 
-      setHeaders(headerResponse.data[0].headers || []);
-      setActions(headerResponse.data[0].actionList || []);
-      setFiles(classesResponse.data || []);
+      axiosInstance
+        .get('app-configuration/getHeaderConfig?tableName=classHeaderConfig')
+        .then(async (headerResponse) => {
+          setPageLimit(headerResponse.data[0].pageLimit);
+
+          const classesResponse = await axiosInstance.get(
+            `classes?limit=${headerResponse.data[0].pageLimit}&page=${currentPage}`,
+          );
+
+          setHeaders(headerResponse.data[0].headers || []);
+          setActions(headerResponse.data[0].actionList || []);
+
+          setFiles(classesResponse.data || []);
+        });
     } catch (error: any) {
       toast.error(error?.message);
       console.error('Error fetching data:', error);
@@ -179,37 +200,45 @@ const ListClasses = () => {
               </tr>
             </thead>
             <tbody>
-              {files.map((file, index) => (
-                <tr key={index}>
-                  {headers.map((header, headerIndex) =>
-                    header.visible ? (
-                      <td key={headerIndex}>
-                        {header.select === 'status' ? (
-                          file.status === 1 ? (
-                            'Active'
+              {files.data &&
+                files?.data.map((file, index) => (
+                  <tr key={index}>
+                    {headers.map((header, headerIndex) =>
+                      header.visible ? (
+                        <td key={headerIndex}>
+                          {header.select === 'status' ? (
+                            file.status === 1 ? (
+                              'Active'
+                            ) : (
+                              'Inactive'
+                            )
+                          ) : header.select === 'createdAt' ||
+                            header.select === 'updatedAt' ? (
+                            new Date(file[header.select]).toLocaleString()
+                          ) : header.select === 'actions' ? (
+                            // Add Action Buttons for this row
+                            <ActionButtons
+                              actionList={actions}
+                              data={file}
+                              onAction={handleAction}
+                            />
                           ) : (
-                            'Inactive'
-                          )
-                        ) : header.select === 'createdAt' ||
-                          header.select === 'updatedAt' ? (
-                          new Date(file[header.select]).toLocaleString()
-                        ) : header.select === 'actions' ? (
-                          // Add Action Buttons for this row
-                          <ActionButtons
-                            actionList={actions}
-                            data={file}
-                            onAction={handleAction}
-                          />
-                        ) : (
-                          file[header.select]
-                        )}
-                      </td>
-                    ) : null,
-                  )}
-                </tr>
-              ))}
+                            file[header.select]
+                          )}
+                        </td>
+                      ) : null,
+                    )}
+                  </tr>
+                ))}
             </tbody>
           </Table>
+
+          <PaginationComponent
+            totalRecords={files?.totalCount}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            recordsPerPage={pageLimit}
+          />
         </Container>
         <ConfirmBox
           {...modelProps}
