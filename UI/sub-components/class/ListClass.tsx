@@ -1,4 +1,5 @@
 import { apiResponseType, DialogOptions } from '@/components/comman/interface';
+import { useDebounce } from '@/hooks/useDebounce';
 import axiosInstance from '@/lib/axios-instance';
 import ActionButtons from '@/pages/components/common/actionButtons';
 import ConfirmBox from '@/pages/components/common/confirmModalBox';
@@ -32,6 +33,8 @@ const ListClasses = () => {
   const [modalShow, setModalShow] = useState(false);
 
   const [rowId, setRowId] = useState('');
+
+  const debouncedSearchText = useDebounce(searchText, 500);
 
   const [files, setFiles] = useState<apiResponseType>({
     data: [],
@@ -73,7 +76,7 @@ const ListClasses = () => {
     return await axiosInstance.get(`classes/${id}`);
   };
 
-  const getClassData = async (limit: number) => {
+  const getClassData = async (limit: number, data = '') => {
     const classesResponse = await axiosInstance.get(
       `classes?limit=${limit}&page=${currentPage}&filter=${searchText}`,
     );
@@ -102,6 +105,14 @@ const ListClasses = () => {
       setLoading(false); // Set loading to false once the fetch is complete
     }
   };
+
+  useEffect(() => {
+    if (debouncedSearchText) {
+      getClassData(pageLimit, debouncedSearchText);
+    } else {
+      setFiles([]); // Optionally clear the list when search is empty
+    }
+  }, [debouncedSearchText, pageLimit]);
 
   useEffect(() => {
     fetchData();
@@ -180,8 +191,6 @@ const ListClasses = () => {
       }, {});
 
     setSearchText(JSON.stringify(filterData));
-
-    getClassData(pageLimit);
   };
 
   return (

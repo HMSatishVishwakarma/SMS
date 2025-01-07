@@ -5,6 +5,7 @@
   "scripts": {
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
     "start:frontend": "cd UI && npm run dev",
-    "start:backend": "cd nestjs-api && npm run start:dev"
+    "start:backend": "cd nestjs-api && npm run start:dev",
+    "git:push": "git add . && git commit -m 'Setup' && git push "
   }
 }
