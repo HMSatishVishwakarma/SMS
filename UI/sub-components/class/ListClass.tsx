@@ -21,7 +21,9 @@ const ListClasses = () => {
   const [loading, setLoading] = useState<boolean>(true); // Track loading state
   const [error, setError] = useState<string | null>(null); // Track error state
 
-  const [pageLimit, setPageLimit] = useState();
+  const [pageLimit, setPageLimit] = useState<number>(0);
+
+  const [searchText, setSearchText] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -71,6 +73,14 @@ const ListClasses = () => {
     return await axiosInstance.get(`classes/${id}`);
   };
 
+  const getClassData = async (limit: number) => {
+    const classesResponse = await axiosInstance.get(
+      `classes?limit=${limit}&page=${currentPage}&filter=${searchText}`,
+    );
+
+    setFiles(classesResponse.data || []);
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -80,14 +90,10 @@ const ListClasses = () => {
         .then(async (headerResponse) => {
           setPageLimit(headerResponse.data[0].pageLimit);
 
-          const classesResponse = await axiosInstance.get(
-            `classes?limit=${headerResponse.data[0].pageLimit}&page=${currentPage}`,
-          );
+          getClassData(headerResponse.data[0].pageLimit);
 
           setHeaders(headerResponse.data[0].headers || []);
           setActions(headerResponse.data[0].actionList || []);
-
-          setFiles(classesResponse.data || []);
         });
     } catch (error: any) {
       toast.error(error?.message);
@@ -163,6 +169,21 @@ const ListClasses = () => {
     setModalShow(true);
   };
 
+  const handleSearchBox = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = event.target;
+
+    const filterData: any = headers
+      .filter((i: any) => i.search)
+      .map((ele) => ({ [ele?.select]: value }))
+      .reduce((acc, curr) => {
+        return { ...acc, ...curr };
+      }, {});
+
+    setSearchText(JSON.stringify(filterData));
+
+    getClassData(pageLimit);
+  };
+
   return (
     <>
       <OverlayLoader loading={loading} />
@@ -173,7 +194,7 @@ const ListClasses = () => {
             <Form.Control
               type="search"
               placeholder="Search"
-              // onChange={handleSearchBox}
+              onChange={handleSearchBox}
             />
           </Form>
         </div>

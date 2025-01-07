@@ -1,7 +1,7 @@
 import { BaseModelInterface } from '../interfaces/baseModel.interface';
 
 import { FilterQuery } from 'mongoose';
-import { applyLikeQuery } from './Utils/helper';
+import { applyDynamicOrFilter } from './Utils/helper';
 
 interface WhereOptions {
   // Define your specific filter fields here
@@ -183,7 +183,9 @@ export abstract class BaseModel implements BaseModelInterface {
     const skip = (page - 1) * limit;
     const sort = sortOrder === 'desc' ? -1 : 1;
 
-    const filterWithLike = applyLikeQuery(filter);
+    console.log(filter, '------------');
+
+    const filterWithLike = applyDynamicOrFilter(filter);
 
     const totalCount = await this.currentModel
       .countDocuments(filterWithLike)

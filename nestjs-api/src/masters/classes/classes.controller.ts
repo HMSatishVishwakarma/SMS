@@ -18,7 +18,7 @@ export class ClassesController {
     @Query('sortBy') sortBy: string = 'createdAt',
     @Query('sortOrder') sortOrder: string = 'asc',
   ): Promise<PaginationResponse<Classes[]>> {
-    const parsedFilter = JSON.parse(filter);
+    const parsedFilter = filter && JSON.parse(filter);
     const parsedProjection = projection
       ? projection
           .split(' ')
