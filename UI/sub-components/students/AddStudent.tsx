@@ -378,7 +378,7 @@ const AddStudent = () => {
 
                   <Row className="mb-4">
                     <Form.Label className="col-md-4" htmlFor="default">
-                      Profile photo
+                      Profile photo <span className="text-danger">*</span>
                     </Form.Label>
 
                     <Col md={8} xs={12}>

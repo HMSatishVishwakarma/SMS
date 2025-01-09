@@ -18,6 +18,7 @@ import { Roles, RolesSchema } from './schemas/roles.schema';
 import { TeachersModule } from './teachers/teachers.module';
 import { ClassesModule } from './masters/classes/classes.module';
 import { AppConfigurationModule } from './app-configuration/app-configuration.module';
+import { SubjectModule } from './masters/subject/subject.module';
 
 @Module({
   imports: [
@@ -49,6 +50,8 @@ import { AppConfigurationModule } from './app-configuration/app-configuration.mo
     ClassesModule,
 
     AppConfigurationModule,
+
+    SubjectModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService, RolesService, RolesModel],

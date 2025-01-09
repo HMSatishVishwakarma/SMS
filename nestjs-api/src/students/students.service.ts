@@ -203,6 +203,7 @@ export class StudentsService {
           gender: 1,
           email: 1,
           image: 1,
+          emergencyContactNumber: 1,
         },
       };
 

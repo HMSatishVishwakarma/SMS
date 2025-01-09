@@ -54,10 +54,6 @@ export abstract class BaseModel implements BaseModelInterface {
   }
   countDocuments2: (id: any, data: any) => Promise<object>;
 
-  findAllDataWithPagination = async (paginationParams, filterConditions) => {
-    return 'Database';
-  };
-
   save(data: object) {
     const response = new this.currentModel(data);
     return response.save();
