@@ -6,41 +6,27 @@ import ConfirmBox from '@/pages/components/common/confirmModalBox';
 import PaginationComponent from '@/pages/components/common/Pagination';
 import OverlayLoader from '@/pages/components/OverlayModal';
 import { getStatusKeyByValue } from '@/utils';
-import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { Button, Container, Form, Row, Table } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import AddClass from './addClass';
 
-const LoadingSpinner = dynamic(() => import('@/components/comman/loader'), {
-  ssr: false,
-});
-
 const ListClasses = () => {
   const [headers, setHeaders] = useState([]); // Store headers data
-  const [actions, setActions] = useState([]); // Store headers data
   const [loading, setLoading] = useState<boolean>(true); // Track loading state
-  const [error, setError] = useState<string | null>(null); // Track error state
-
   const [pageLimit, setPageLimit] = useState<number>(0);
-
+  const [actions, setActions] = useState([]); // Store headers data
   const [searchText, setSearchText] = useState('');
-
   const [currentPage, setCurrentPage] = useState(1);
-
   const [modelProps, setModelProps] = useState<DialogOptions>({});
-
   const [modalShow, setModalShow] = useState(false);
-
   const [rowId, setRowId] = useState('');
-
-  const debouncedSearchText = useDebounce(searchText, 500);
 
   const [files, setFiles] = useState<apiResponseType>({
     data: [],
     totalCount: 0,
   });
-
+  const debouncedSearchText = useDebounce(searchText, 500);
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -92,9 +78,7 @@ const ListClasses = () => {
         .get('app-configuration/getHeaderConfig?tableName=classHeaderConfig')
         .then(async (headerResponse) => {
           setPageLimit(headerResponse.data[0].pageLimit);
-
           getClassData(headerResponse.data[0].pageLimit);
-
           setHeaders(headerResponse.data[0].headers || []);
           setActions(headerResponse.data[0].actionList || []);
         });
