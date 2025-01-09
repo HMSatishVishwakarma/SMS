@@ -28,6 +28,7 @@ interface InitialValues {
   dob: string;
   image: object;
   email: string;
+  emergencyContactNumber: string;
 }
 
 const AddStudent = () => {
@@ -46,9 +47,8 @@ const AddStudent = () => {
     dob: '',
     email: '',
     image: {},
+    emergencyContactNumber: '',
   };
-
-  // console.log(id, 'id');
 
   const [initValue, setInitValue] = useState(initialValues);
 
@@ -97,23 +97,6 @@ const AddStudent = () => {
     }
   };
 
-  const classList = [1, 2, 3, 4, 5, 6, 7, 8];
-
-  function ordinal_suffix_of(i: any) {
-    let j = i % 10,
-      k = i % 100;
-    if (j === 1 && k !== 11) {
-      return i + 'st';
-    }
-    if (j === 2 && k !== 12) {
-      return i + 'nd';
-    }
-    if (j === 3 && k !== 13) {
-      return i + 'rd';
-    }
-    return i + 'th';
-  }
-
   return (
     <Row className="justify-content-center mb-8">
       <Col xl={9} lg={8} md={12} xs={12}>
@@ -149,11 +132,9 @@ const AddStudent = () => {
                 setFieldValue,
               }) => (
                 <Form onSubmit={handleSubmit}>
-                  {/* New email */}
-
                   <Row className="mb-3">
                     <Form.Label className="col-sm-4" htmlFor="newEmailAddress">
-                      First Name -
+                      First Name <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <Form.Control
@@ -165,13 +146,17 @@ const AddStudent = () => {
                         id="firstName"
                       />
 
-                      <ErrorMessage name="firstName" component="div" />
+                      <ErrorMessage
+                        name="firstName"
+                        component="div"
+                        className="error-message"
+                      />
                     </Col>
                   </Row>
 
                   <Row className="mb-3">
                     <Form.Label className="col-sm-4" htmlFor="lastName">
-                      Last Name
+                      Last Name <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <Form.Control
@@ -182,13 +167,17 @@ const AddStudent = () => {
                         placeholder="Enter your last name"
                         id="lastName"
                       />
-                      <ErrorMessage name="lastName" component="div" />
+                      <ErrorMessage
+                        name="lastName"
+                        component="div"
+                        className="error-message"
+                      />
                     </Col>
                   </Row>
 
                   <Row className="mb-3">
                     <Form.Label className="col-sm-4" htmlFor="fatherName">
-                      Father Name
+                      Father Name <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <Form.Control
@@ -200,16 +189,16 @@ const AddStudent = () => {
                         id="fatherName"
                       />
                       <ErrorMessage
-                        className="validation-error-message"
                         name="fatherName"
                         component="div"
+                        className="error-message"
                       />
                     </Col>
                   </Row>
 
                   <Row className="mb-3">
                     <Form.Label className="col-sm-4" htmlFor="motherName">
-                      Mother Name
+                      Mother Name <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <Form.Control
@@ -224,13 +213,14 @@ const AddStudent = () => {
                       <ErrorMessage
                         name="motherName"
                         component="div"
+                        className="error-message"
                       ></ErrorMessage>
                     </Col>
                   </Row>
 
                   <Row className="mb-3">
                     <Form.Label className="col-sm-4" htmlFor="email">
-                      Email Id
+                      Email Id <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <Form.Control
@@ -242,13 +232,17 @@ const AddStudent = () => {
                         id="motherName"
                       />
 
-                      <ErrorMessage name="email" component="div"></ErrorMessage>
+                      <ErrorMessage
+                        name="email"
+                        component="div"
+                        className="error-message"
+                      ></ErrorMessage>
                     </Col>
                   </Row>
 
                   <Row className="mb-3">
                     <Form.Label className="col-sm-4" htmlFor="fatherName">
-                      Class
+                      Class <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <Form.Select
@@ -258,21 +252,26 @@ const AddStudent = () => {
                         aria-label="Default select example"
                       >
                         <option value="">Please select</option>
-                        {classData.map(
-                          (i: { _id: string; className: string }) => (
-                            <option key={i._id} value={i._id}>
-                              {i.className}
-                            </option>
-                          ),
-                        )}
+                        {classData?.data &&
+                          classData?.data.map(
+                            (i: { _id: string; className: string }) => (
+                              <option key={i._id} value={i._id}>
+                                {i.className}
+                              </option>
+                            ),
+                          )}
                       </Form.Select>
-                      <ErrorMessage name="class" component="div" />
+                      <ErrorMessage
+                        name="class"
+                        component="div"
+                        className="error-message"
+                      />
                     </Col>
                   </Row>
 
                   <Row className="mb-3">
                     <Form.Label className="col-md-4" htmlFor="default">
-                      Gender
+                      Gender <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <Form.Check
@@ -302,14 +301,18 @@ const AddStudent = () => {
                           name="gender"
                         />
                         <Form.Check.Label>Female</Form.Check.Label>
-                        <ErrorMessage name="gender" component="div" />
                       </Form.Check>
+                      <ErrorMessage
+                        name="gender"
+                        component="div"
+                        className="error-message"
+                      />
                     </Col>
                   </Row>
 
                   <Row className="mb-3">
                     <Form.Label className="col-sm-4" htmlFor="DOB">
-                      DOB - {values.dob}
+                      DOB <span className="text-danger">*</span>
                     </Form.Label>
                     <Col md={8} xs={12}>
                       <DateRangePicker
@@ -338,7 +341,38 @@ const AddStudent = () => {
                           value={values.dob}
                         />
                       </DateRangePicker>
-                      <ErrorMessage name="class" component="div" />
+
+                      <ErrorMessage
+                        name="dob"
+                        component="div"
+                        className="error-message"
+                      />
+                    </Col>
+                  </Row>
+
+                  <Row className="mb-3">
+                    <Form.Label
+                      className="col-sm-4"
+                      htmlFor="emergencyContactNumber"
+                    >
+                      Emergency Contact Number{' '}
+                      <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Col md={8} xs={12}>
+                      <Form.Control
+                        name="emergencyContactNumber"
+                        onChange={handleChange}
+                        value={values.emergencyContactNumber}
+                        type="text"
+                        placeholder="Enter emergency contact number"
+                        id="emergencyContactNumber"
+                        className="form-control col-4"
+                      />
+                      <ErrorMessage
+                        name="emergencyContactNumber"
+                        component="div"
+                        className="error-message"
+                      />
                     </Col>
                   </Row>
 
@@ -363,6 +397,10 @@ const AddStudent = () => {
                         height="30"
                         width="30"
                       /> */}
+
+                      {errors.image && touched.image && (
+                        <div className="error-message">{errors.image}</div>
+                      )}
                     </Col>
 
                     <Col md={{ offset: 4, span: 8 }} xs={12} className="mt-4">

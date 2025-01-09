@@ -50,7 +50,7 @@ export class UserDto {
   updatedAt?: Date;
 
   @IsOptional()
-  role: number[];
+  role?: string[];
 
   @IsOptional()
   status?: number;

@@ -1,4 +1,4 @@
-import { ROLES, STATUS } from '@app/common/enums';
+import { STATUS } from '@app/common/enums';
 import { fileInterFace } from '@app/common/interfaces';
 import { randomUserName } from '@app/common/utils';
 import { UsersService } from '@app/users/users.service';
@@ -10,7 +10,7 @@ import { first } from 'lodash';
 
 import * as fs from 'fs';
 
-import { DATAIMAGEPREFIX } from '@app/common/constants/constants';
+import { DATAIMAGEPREFIX, STUDENT_ROLE } from '@app/common/constants/constants';
 import { AggregationOptions } from '@app/common/dto/index.dto';
 import { mongodbDateFormat } from '@app/common/helpers';
 import { Types } from 'mongoose';
@@ -47,7 +47,7 @@ export class StudentsService {
     const prePareRegData = {
       username: randomUserName(),
       password: 'Test@123',
-      role: [ROLES.STUDENT],
+      role: [STUDENT_ROLE],
       createdAt: new Date(),
       updatedAt: new Date(),
       profileImage: {
@@ -61,7 +61,10 @@ export class StudentsService {
       },
       status: STATUS.INACTIVE,
       email: body.email,
+      emergencyContactNumber: body.emergencyContactNumber,
     };
+
+    console.log('------------>', prePareRegData);
 
     if (body._id) {
       const { userId: studentUserId } =
@@ -81,10 +84,14 @@ export class StudentsService {
       );
     } else {
       const userInfo = await this.usersService.registerUser(prePareRegData);
+
+      console.log(userInfo, '--------DS--');
+
       return this.studentModel.save({
         ...body,
         ...{
-          userId: userInfo[0]._id,
+          class: new Types.ObjectId(body.class),
+          userId: userInfo._id,
           createdBy: userId,
           updatedBy: userId,
         },

@@ -18,10 +18,12 @@ export class UsersService {
     password,
     email,
     profileImage,
+    role,
   }: UserDto): Promise<UsersDocuments> {
     const hash = await bcrypt.hash(password, await bcrypt.genSalt());
     const prepareUserObj = {
       username,
+      roles: role,
       password: hash,
       email,
       profileImage,

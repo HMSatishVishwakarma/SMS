@@ -5,7 +5,7 @@ import { Teacher } from '@app/teachers/schemas/teacher/teacher.schema';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TeacherModel } from './models/teacher.model';
 
-import { ROLES, STATUS } from '@app/common/enums';
+import { STATUS } from '@app/common/enums';
 import {
   defaultCreatedAndUpdatedBy,
   getUsersDataFromRequest,
@@ -45,7 +45,7 @@ export class TeachersService {
       status: STATUS.INACTIVE,
       username: randomUserName(),
       password: 'Test@123',
-      role: [ROLES.TEACHER],
+      role: [],
       email: createTeacherDto.email,
       ...defaultCreatedAndUpdatedBy(userId),
     };

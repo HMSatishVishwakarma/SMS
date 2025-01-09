@@ -6,7 +6,7 @@ export interface UsersDocuments extends Document {
   email: string;
   username: string;
   password: string;
-  role: string;
+  role: string[];
   profileImage: object;
   status: number;
   createdAt: Date;

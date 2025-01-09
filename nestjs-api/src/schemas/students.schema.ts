@@ -19,11 +19,14 @@ export class Students {
   @Prop({ required: true, type: String })
   motherName: string;
 
-  @Prop({ required: true, type: String })
-  class: string;
+  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'Classes' })
+  class: MongooseSchema.Types.ObjectId;
 
   @Prop({ required: true, default: STATUS.INACTIVE })
   status: number;
+
+  @Prop({ required: true, default: '' })
+  emergencyContactNumber: number;
 
   @Prop({ required: true, type: Date })
   dob: string;
@@ -45,9 +48,6 @@ export class Students {
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Users', default: null })
   updatedBy: MongooseSchema.Types.ObjectId;
-
-  /* @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Users', default: null })
-  userId: MongooseSchema.Types.ObjectId; */
 }
 
 export const studentsSchema = SchemaFactory.createForClass(Students);

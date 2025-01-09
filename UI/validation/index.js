@@ -1,2 +1,2 @@
 export * from './addClass';
-export * from './addStuden';
+export * from './addStudent';

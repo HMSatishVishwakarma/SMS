@@ -28,6 +28,9 @@ export class StudentDto {
 
   @IsNotEmpty()
   email: string;
+
+  @IsNotEmpty()
+  emergencyContactNumber: number;
 }
 
 export class updateStatusDto {

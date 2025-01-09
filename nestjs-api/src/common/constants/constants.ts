@@ -5,3 +5,6 @@ export const jwtConstants = {
 };
 
 export const DATAIMAGEPREFIX = `data:image/png;base64,`;
+
+export const STUDENT_ROLE = '66e85af633d6aae5db1b7a38';
+export const TEACHER_ROLE = '66e85af633d6aae5db1b7a37';

@@ -111,6 +111,24 @@ export class StudentModel extends BaseModel {
           preserveNullAndEmptyArrays: true,
         },
       },
+
+      {
+        $lookup: {
+          from: 'classes',
+          localField: 'class',
+          foreignField: '_id',
+          as: 'classes',
+        },
+      },
+
+      {
+        $unwind: {
+          path: '$classes',
+          includeArrayIndex: 'string',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
       {
         $addFields: {
           statusLabel: {
@@ -126,6 +144,8 @@ export class StudentModel extends BaseModel {
               default: '',
             },
           },
+
+          class: '$classes.className',
         },
       },
       {

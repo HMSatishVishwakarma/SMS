@@ -110,11 +110,7 @@ const AddClass = ({ onClick, initialValues }: any) => {
                       Inactive
                     </label>
                   </div>
-                  <ErrorMessage
-                    name="status"
-                    component="div"
-                    className="error-message"
-                  />
+                  <ErrorMessage name="status" component="div" />
                 </Col>
               </Row>
 
