@@ -54,9 +54,17 @@ export const DashboardMenu = [
       {
         id: uuid(),
         link: '#',
-        title: 'Class',
-        children: [{ id: uuid(), link: '/pages/listClass', name: 'Classes' }],
+        name: 'Classes',
+        link: '/pages/listClass',
       },
+
+      {
+        id: uuid(),
+        link: '#',
+        name: 'Subject',
+        link: '/pages/listSubject',
+      },
+
       {
         id: uuid(),
         link: '#',
