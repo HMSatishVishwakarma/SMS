@@ -29,6 +29,7 @@ import Notifications from '@/sub-components/settings/Notifications';
 import Preferences from '@/sub-components/settings/Preferences';
 import AddStudent from '@/sub-components/students/AddStudent';
 import ListStudent from '@/sub-components/students/ListStudent';
+import ListSubjects from '@/sub-components/subjects/listSubjects';
 
 export {
   AboutMe,
@@ -42,6 +43,7 @@ export {
   GeneralSetting,
   ListClasses,
   ListStudent,
+  ListSubjects,
   MyTeam,
   Notifications,
   Preferences,

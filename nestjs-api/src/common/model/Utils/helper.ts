@@ -1,3 +1,5 @@
+import { Setting } from '@app/common/interfaces';
+
 export const applyLikeQuery = (filter: any) => {
   // Convert fields with string values to use regex for 'like' queries
   const updatedFilter: any = {};
@@ -38,3 +40,20 @@ export function applyDynamicOrFilter(filters: any[]): any {
 function objectToArray(obj: any): any[] {
   return Object.keys(obj).map((key) => ({ [key]: obj[key] }));
 }
+
+export const filterSettingsByNameAndAppendFirst = (
+  settings,
+  name: string,
+): Setting[] => {
+  // Filter the settings based on the name
+  const filteredSetting = settings.filter((setting) => setting.name === name);
+
+  //  const filteredSetting = settings.filter(setting => setting.name === filterText);
+
+  if (filteredSetting.length > 0) {
+    settings[0] = filteredSetting;
+  }
+
+  // Return the first match or an empty object if no match is found
+  return filteredSetting;
+};

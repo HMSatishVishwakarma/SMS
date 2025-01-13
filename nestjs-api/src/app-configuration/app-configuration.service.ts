@@ -1,3 +1,4 @@
+import { filterSettingsByNameAndAppendFirst } from '@app/common/model/Utils/helper';
 import { AppConfiguration } from '@app/schemas/app-configuration.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -20,6 +21,6 @@ export class AppConfigurationService {
       throw new Error('Configuration not found');
     }
 
-    return config.setting;
+    return filterSettingsByNameAndAppendFirst(config.setting, header);
   }
 }

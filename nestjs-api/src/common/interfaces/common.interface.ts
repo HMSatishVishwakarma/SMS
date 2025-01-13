@@ -17,3 +17,23 @@ export interface PaginationResponse<T> {
   data: T[];
   totalCount: number;
 }
+
+interface Header {
+  name: string;
+  visible: boolean;
+  select?: string;
+  search?: boolean;
+}
+
+interface ActionList {
+  edit: boolean;
+  delete: boolean;
+  status: boolean;
+}
+
+export interface Setting {
+  name: string;
+  headers: Header[];
+  actionList: ActionList;
+  pageLimit: number;
+}
