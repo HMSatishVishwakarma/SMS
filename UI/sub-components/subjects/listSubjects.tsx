@@ -3,6 +3,7 @@ import axiosInstance from '@/lib/axios-instance';
 import { getStatusKeyByValue } from '@/utils';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import AddSubject from './AddSubject';
 
 const ListSubjects = () => {
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const ListSubjects = () => {
       case 'delete':
       case 'status':
         const title = getStatusKeyByValue(actionData.value);
-        console.log(title, '--------------sfd');
+
         setModelProps({
           body: `Are you sure you want to be ${title}?`,
           actionType: actionData.value,
@@ -44,7 +45,7 @@ const ListSubjects = () => {
         setModalShow(true);
         break;
       case 'edit':
-        /*  const response: any = await getClassById(actionData._id);
+        const response: any = { data: { name: 'Sfs' } };
 
         const data = response.data;
 
@@ -53,11 +54,11 @@ const ListSubjects = () => {
           okText: 'Submit',
 
           title: 'Edit Class',
-          body: <AddClass initialValues={data} onClick={addFormSubmit} />,
+          body: <AddSubject initialValues={data} />,
           actionType: actionData.value,
           showFooter: false,
         });
-        setModalShow(true); */
+        setModalShow(true);
         break;
 
       default:
