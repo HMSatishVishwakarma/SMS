@@ -7,7 +7,7 @@ import OverlayLoader from '@/pages/components/OverlayModal';
 import { useEffect, useState } from 'react';
 import { Button, Container, Form, Row, Table } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast'; // If you're using react-hot-toast for notifications
-import { DialogOptions, apiResponseType } from './interface';
+import { apiResponseType } from './interface';
 
 interface Header {
   name: string;
@@ -30,40 +30,25 @@ interface Action {
 interface DataTableProps {
   appConfigURL: string;
   pageDataURL: string;
-  // loading: boolean;
-  // files: {
-  //   data: File[];
-  //   totalCount: number;
-  // };
-  // headers: Header[];
-  // currentPage: number;
-  // pageLimit: number;
+  modalShow: boolean;
   handleSearchBox: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleAddClassBtn: () => void;
   handleAction: (action: string, data: File) => void;
-  // handlePageChange: (page: number) => void;
-  // modalShow: boolean;
-  // modelProps: object;
-  onConfirm: (confirmed: boolean) => void;
-  // actions: Action[];
+  modelProps: object;
+  onConfirm: (actionType: number) => void;
+  refresh: boolean;
 }
 
 const DataTable: React.FC<DataTableProps> = ({
   appConfigURL,
   pageDataURL,
-  // loading,
-  // files,
-  // headers,
-  // currentPage,
-  // pageLimit,
+  modelProps,
   handleSearchBox,
   handleAddClassBtn,
   handleAction,
-  // handlePageChange,
-  // modalShow,
-  // modelProps,
+  modalShow,
   onConfirm,
-  // actions,
+  refresh = false,
 }) => {
   const [headers, setHeaders] = useState([]); // Store headers data
   const [loading, setLoading] = useState<boolean>(true); // Track loading state
@@ -71,9 +56,9 @@ const DataTable: React.FC<DataTableProps> = ({
   const [actions, setActions] = useState([]); // Store headers data
   const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [modelProps, setModelProps] = useState<DialogOptions>({});
-  const [modalShow, setModalShow] = useState(false);
-  const [rowId, setRowId] = useState('');
+
+  // const [modelProps, setModelProps] = useState<DialogOptions>({});
+  // const [modalShow, setModalShow] = useState(false);
 
   const [files, setFiles] = useState<apiResponseType>({
     data: [],
@@ -91,6 +76,16 @@ const DataTable: React.FC<DataTableProps> = ({
 
     setFiles(classesResponse.data || []);
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (refresh) {
+      fetchData();
+    }
+  }, [refresh]);
 
   const fetchData = async () => {
     try {
@@ -112,13 +107,11 @@ const DataTable: React.FC<DataTableProps> = ({
       toast.error(error?.message);
       console.error('Error fetching data:', error);
     } finally {
+      // handleRefreshEvent(refresh);
+
       setLoading(false); // Set loading to false once the fetch is complete
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
     <>
@@ -200,6 +193,8 @@ const DataTable: React.FC<DataTableProps> = ({
             recordsPerPage={pageLimit}
           />
         </Container>
+
+        {JSON.stringify(modalShow)}
 
         {/* Confirm Box (Modal) */}
         <ConfirmBox

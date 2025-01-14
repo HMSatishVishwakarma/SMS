@@ -179,21 +179,16 @@ export abstract class BaseModel implements BaseModelInterface {
     const skip = (page - 1) * limit;
     const sort = sortOrder === 'desc' ? -1 : 1;
 
-    console.log(filter, '------------');
-
     const filterWithLike = applyDynamicOrFilter(filter);
 
-    const totalCount = await this.currentModel
-      .countDocuments(filterWithLike)
-      .exec();
+    const totalCount = await this.currentModel.countDocuments(filterWithLike);
 
     const data = await this.currentModel
       .find(filterWithLike)
       .skip(skip)
       .limit(limit)
       .select(projection)
-      .sort({ [sortBy]: sort })
-      .exec();
+      .sort({ [sortBy]: sort });
 
     return {
       data,
