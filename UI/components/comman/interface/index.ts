@@ -32,3 +32,11 @@ export interface apiResponseType {
   data: [];
   totalCount: number;
 }
+
+export interface ModelProps {
+  okText?: string; // Button text
+  title?: string; // Modal title
+  body?: React.ReactNode; // Content of the modal body (which can be a component)
+  actionType?: string; // Action type, e.g., 'addSubject'
+  showFooter?: boolean;
+}

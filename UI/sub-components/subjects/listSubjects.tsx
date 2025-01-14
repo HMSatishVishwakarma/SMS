@@ -1,4 +1,5 @@
 import DataTable from '@/components/comman/dataTable';
+import { ModelProps } from '@/components/comman/interface';
 import axiosInstance from '@/lib/axios-instance';
 import { getStatusKeyByValue } from '@/utils';
 import { useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ const ListSubjects = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(10);
   const [modalShow, setModalShow] = useState(false);
-  const [modelProps, setModelProps] = useState({});
+  const [modelProps, setModelProps] = useState<ModelProps>({});
   const [actions, setActions] = useState([]);
 
   const [rowId, setRowId] = useState('');
@@ -22,8 +23,26 @@ const ListSubjects = () => {
     console.log(e.target.value);
   };
 
+  const addFormSubmit = (response: any) => {
+    if (response.status) {
+      setRefresh(true);
+      toast.success(response.data);
+      setModalShow(false);
+    } else {
+      toast.error('Error');
+    }
+  };
+
   const handleAddClassBtn = () => {
-    console.log('Add Class Button Clicked');
+    setModelProps({
+      okText: 'Submit',
+
+      title: 'Add Subject',
+      body: <AddSubject onClick={addFormSubmit} />,
+      actionType: 'addSubject',
+      showFooter: false,
+    });
+    setModalShow(true);
   };
 
   const handleAction = async (actionData: {
@@ -72,6 +91,10 @@ const ListSubjects = () => {
 
   const onConfirm = async (actionType: number) => {
     try {
+      console.log(
+        `Model confirm event trigged , Data : ${JSON.stringify(actionType)} `,
+      );
+
       await axiosInstance.put('subject/updateStatus/' + rowId, {
         status: actionType,
       });
@@ -97,11 +120,21 @@ const ListSubjects = () => {
     };
   }, [refresh]);
 
+  const hideModal = () => {
+    setRowId('');
+
+    delete modelProps.body;
+    delete modelProps.actionType;
+
+    setModalShow(false);
+  };
+
   return (
     <div>
       <DataTable
         appConfigURL="app-configuration/getHeaderConfig?tableName=subjectHeaderConfig"
         pageDataURL="subject"
+        addButtonName="Add Subject"
         // loading={loading}
         // currentPage={currentPage}
         // pageLimit={pageLimit}
@@ -109,6 +142,7 @@ const ListSubjects = () => {
         handleAddClassBtn={handleAddClassBtn}
         handleAction={handleAction}
         // handlePageChange={handlePageChange}
+        hideModal={hideModal}
         modalShow={modalShow}
         modelProps={modelProps}
         onConfirm={onConfirm}

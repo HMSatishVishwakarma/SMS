@@ -29,12 +29,14 @@ interface Action {
 
 interface DataTableProps {
   appConfigURL: string;
+  addButtonName: string;
   pageDataURL: string;
   modalShow: boolean;
   handleSearchBox: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleAddClassBtn: () => void;
   handleAction: (action: string, data: File) => void;
   modelProps: object;
+  hideModal: () => void;
   onConfirm: (actionType: number) => void;
   refresh: boolean;
 }
@@ -48,7 +50,9 @@ const DataTable: React.FC<DataTableProps> = ({
   handleAction,
   modalShow,
   onConfirm,
+  addButtonName,
   refresh = false,
+  hideModal,
 }) => {
   const [headers, setHeaders] = useState([]); // Store headers data
   const [loading, setLoading] = useState<boolean>(true); // Track loading state
@@ -133,7 +137,7 @@ const DataTable: React.FC<DataTableProps> = ({
         {/* Add Class Button */}
         <div className="fw-semi-bold mb-1">
           <Button onClick={handleAddClassBtn} variant="primary">
-            Add Class 2
+            {addButtonName}
           </Button>
         </div>
       </div>
@@ -200,7 +204,7 @@ const DataTable: React.FC<DataTableProps> = ({
         <ConfirmBox
           {...modelProps}
           show={modalShow}
-          onHide={() => onConfirm(false)}
+          onHide={hideModal}
           onConfirm={onConfirm}
         />
       </Row>
