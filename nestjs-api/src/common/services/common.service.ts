@@ -14,6 +14,11 @@ export class CommonService {
     sortBy,
     sortOrder,
   ) {
+    parsedFilter = {
+      status: { $ne: 0 },
+      ...parsedFilter,
+    };
+
     return this.commonService.getPaginatedData(
       page,
       limit,
@@ -29,5 +34,9 @@ export class CommonService {
       status: body.status,
       updatedAt: new Date(),
     });
+  }
+
+  create(body) {
+    return this.commonService.save(body);
   }
 }

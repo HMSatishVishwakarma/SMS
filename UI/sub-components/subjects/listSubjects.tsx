@@ -25,9 +25,9 @@ const ListSubjects = () => {
 
   const addFormSubmit = (response: any) => {
     if (response.status) {
-      setRefresh(true);
       toast.success(response.data);
       setModalShow(false);
+      setRefresh(true);
     } else {
       toast.error('Error');
     }

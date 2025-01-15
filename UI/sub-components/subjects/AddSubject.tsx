@@ -6,17 +6,16 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 import { Toaster } from 'react-hot-toast';
 
 interface FormValues {
-  subjectName: string;
+  name: string;
   description: string;
 }
 
 const AddSubject = ({ onClick, initialValues }: any) => {
   const defaultValues = {
-    subjectName: '', // Default empty string for subjectName
-    description: '', // Default empty string for description
+    name: '',
+    description: '',
   };
 
-  // Merge defaultValues with initialValues from props
   const mergedValues = { ...defaultValues, ...initialValues };
 
   const handleSubmit = async (values: FormValues) => {
@@ -24,15 +23,16 @@ const AddSubject = ({ onClick, initialValues }: any) => {
       let response = '';
       if (mergedValues && mergedValues._id) {
         response = await axiosInstance.put(
-          `subjects/${mergedValues._id}`,
+          `subject/${mergedValues._id}`,
           values,
         );
       } else {
-        response = await axiosInstance.post('subjects', values);
+        response = await axiosInstance.post('subject', values);
       }
       onClick(response);
     } catch (error) {
-      onClick('Error');
+      console.log('ERROR--------->');
+      // onClick('Error');
     }
   };
 
@@ -45,31 +45,24 @@ const AddSubject = ({ onClick, initialValues }: any) => {
           validationSchema={validationSubjectSchema} // Replace with actual validation schema
           onSubmit={handleSubmit}
         >
-          {({
-            values,
-            handleChange,
-            handleSubmit,
-            isValid,
-            dirty,
-            setFieldValue,
-          }) => (
+          {({ values, handleChange, handleSubmit, isValid, dirty }) => (
             <Form onSubmit={handleSubmit}>
               <Row className="mb-3">
-                <Form.Label className="col-sm-4" htmlFor="subjectName">
+                <Form.Label className="col-sm-4" htmlFor="name">
                   Subject Name:
                 </Form.Label>
                 <Col md={8} xs={12}>
                   <Field
                     type="text"
-                    name="subjectName"
+                    name="name"
                     onChange={handleChange}
                     placeholder="Enter subject name"
-                    value={values.subjectName}
-                    id="subjectName"
+                    value={values.name}
+                    id="name"
                     className="form-control"
                   />
                   <ErrorMessage
-                    name="subjectName"
+                    name="name"
                     component="div"
                     className="error-message"
                   />

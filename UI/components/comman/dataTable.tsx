@@ -1,11 +1,8 @@
 import useDebounce from '@/hooks/useDebounce';
 import axiosInstance from '@/lib/axios-instance';
-import ActionButtons from '@/pages/components/common/actionButtons';
 import ConfirmBox from '@/pages/components/common/confirmModalBox';
-import PaginationComponent from '@/pages/components/common/Pagination';
-import OverlayLoader from '@/pages/components/OverlayModal';
 import { useEffect, useState } from 'react';
-import { Button, Container, Form, Row, Table } from 'react-bootstrap';
+import { Button, Form, Row } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast'; // If you're using react-hot-toast for notifications
 import { apiResponseType } from './interface';
 
@@ -78,7 +75,7 @@ const DataTable: React.FC<DataTableProps> = ({
       `${pageDataURL}?limit=${limit}&page=${currentPage}&filter=${searchText}`,
     );
 
-    setFiles(classesResponse.data || []);
+    // setFiles(classesResponse.data || []);
   };
 
   useEffect(() => {
@@ -99,11 +96,6 @@ const DataTable: React.FC<DataTableProps> = ({
         setPageLimit(headerResponse.data[0].pageLimit);
         getPageData(headerResponse.data[0].pageLimit);
 
-        console.log(
-          headerResponse.data[0].headers,
-          'headerResponse.data[0].headers',
-        );
-
         setHeaders(headerResponse.data[0].headers || []);
         setActions(headerResponse.data[0].actionList || []);
       });
@@ -117,10 +109,11 @@ const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
+  // console.log(files);
+
   return (
     <>
       {/* Loading Overlay */}
-      <OverlayLoader loading={loading} />
 
       <div className="d-flex justify-content-between w-100">
         {/* Search Form */}
@@ -147,59 +140,6 @@ const DataTable: React.FC<DataTableProps> = ({
 
       {/* Table */}
       <Row>
-        <Container fluid>
-          <Table responsive>
-            <thead>
-              <tr>
-                {headers.map((header, index) =>
-                  header.visible ? <th key={index}>{header.name}</th> : null,
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {files.data &&
-                files.data.map((file, index) => (
-                  <tr key={index}>
-                    {headers.map((header, headerIndex) =>
-                      header.visible ? (
-                        <td key={headerIndex}>
-                          {header.select === 'status' ? (
-                            file.status === 1 ? (
-                              'Active'
-                            ) : (
-                              'Inactive'
-                            )
-                          ) : header.select === 'createdAt' ||
-                            header.select === 'updatedAt' ? (
-                            new Date(file[header.select]).toLocaleString()
-                          ) : header.select === 'actions' ? (
-                            <ActionButtons
-                              actionList={actions}
-                              data={file}
-                              onAction={handleAction}
-                            />
-                          ) : (
-                            file[header.select]
-                          )}
-                        </td>
-                      ) : null,
-                    )}
-                  </tr>
-                ))}
-            </tbody>
-          </Table>
-
-          {/* Pagination */}
-          <PaginationComponent
-            totalRecords={files?.totalCount}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            recordsPerPage={pageLimit}
-          />
-        </Container>
-
-        {JSON.stringify(modalShow)}
-
         {/* Confirm Box (Modal) */}
         <ConfirmBox
           {...modelProps}
