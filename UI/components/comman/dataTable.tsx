@@ -3,9 +3,8 @@ import axiosInstance from '@/lib/axios-instance';
 import ActionButtons from '@/pages/components/common/actionButtons';
 import ConfirmBox from '@/pages/components/common/confirmModalBox';
 import PaginationComponent from '@/pages/components/common/Pagination';
-import OverlayLoader from '@/pages/components/OverlayModal';
 import { useEffect, useState } from 'react';
-import { Button, Container, Form, Row, Table } from 'react-bootstrap';
+import { Button, Container, Form, Row, Spinner, Table } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast'; // If you're using react-hot-toast for notifications
 import { apiResponseType } from './interface';
 
@@ -73,6 +72,10 @@ const DataTable: React.FC<DataTableProps> = ({
     setCurrentPage(page);
   };
 
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]);
+
   const getPageData = async (limit: number, data = '') => {
     const classesResponse = await axiosInstance.get(
       `${pageDataURL}?limit=${limit}&page=${currentPage}&filter=${searchText}`,
@@ -106,109 +109,110 @@ const DataTable: React.FC<DataTableProps> = ({
 
         setHeaders(headerResponse.data[0].headers || []);
         setActions(headerResponse.data[0].actionList || []);
+        setLoading(false);
       });
     } catch (error: any) {
       toast.error(error?.message);
       console.error('Error fetching data:', error);
-    } finally {
-      // handleRefreshEvent(refresh);
-
-      setLoading(false); // Set loading to false once the fetch is complete
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      {/* Loading Overlay */}
-      <OverlayLoader loading={loading} />
+    <Row>
+      <Container fluid>
+        <Toaster position="top-right" reverseOrder={false} />
+        <div className="d-flex justify-content-between w-100">
+          {/* Search Form */}
+          <div className="ms-lg-3 d-none d-md-none d-lg-block">
+            <Form className="d-flex align-items-center">
+              <Form.Control
+                type="search"
+                placeholder="Search"
+                onChange={handleSearchBox}
+              />
+            </Form>
+          </div>
 
-      <div className="d-flex justify-content-between w-100">
-        {/* Search Form */}
-        <div className="ms-lg-3 d-none d-md-none d-lg-block">
-          <Form className="d-flex align-items-center">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              onChange={handleSearchBox}
-            />
-          </Form>
+          {/* Add Class Button */}
+          <div className="fw-semi-bold mb-1">
+            <Button onClick={handleAddClassBtn} variant="primary">
+              {addButtonName}
+            </Button>
+          </div>
         </div>
 
-        {/* Add Class Button */}
-        <div className="fw-semi-bold mb-1">
-          <Button onClick={handleAddClassBtn} variant="primary">
-            {addButtonName}
-          </Button>
-        </div>
-      </div>
+        {loading ? (
+          <div className="d-flex align-items-center ms-3">
+            <strong>Loading...</strong>
+            <Spinner animation="border" role="status" className="ms-auto">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        ) : (
+          <>
+            {/* Table */}
 
-      {/* Toast Notifications */}
-      <Toaster position="top-right" reverseOrder={false} />
-
-      {/* Table */}
-      <Row>
-        <Container fluid>
-          <Table responsive>
-            <thead>
-              <tr>
-                {headers.map((header, index) =>
-                  header.visible ? <th key={index}>{header.name}</th> : null,
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {files.data &&
-                files.data.map((file, index) => (
-                  <tr key={index}>
-                    {headers.map((header, headerIndex) =>
-                      header.visible ? (
-                        <td key={headerIndex}>
-                          {header.select === 'status' ? (
-                            file.status === 1 ? (
-                              'Active'
+            <Table responsive>
+              <thead>
+                <tr>
+                  {headers.map((header, index) =>
+                    header.visible ? <th key={index}>{header.name}</th> : null,
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {files.data &&
+                  files.data.map((file, index) => (
+                    <tr key={index}>
+                      {headers.map((header, headerIndex) =>
+                        header.visible ? (
+                          <td key={headerIndex}>
+                            {header.select === 'status' ? (
+                              file.status === 1 ? (
+                                'Active'
+                              ) : (
+                                'Inactive'
+                              )
+                            ) : header.select === 'createdAt' ||
+                              header.select === 'updatedAt' ? (
+                              new Date(file[header.select]).toLocaleString()
+                            ) : header.select === 'actions' ? (
+                              <ActionButtons
+                                actionList={actions}
+                                data={file}
+                                onAction={handleAction}
+                              />
                             ) : (
-                              'Inactive'
-                            )
-                          ) : header.select === 'createdAt' ||
-                            header.select === 'updatedAt' ? (
-                            new Date(file[header.select]).toLocaleString()
-                          ) : header.select === 'actions' ? (
-                            <ActionButtons
-                              actionList={actions}
-                              data={file}
-                              onAction={handleAction}
-                            />
-                          ) : (
-                            file[header.select]
-                          )}
-                        </td>
-                      ) : null,
-                    )}
-                  </tr>
-                ))}
-            </tbody>
-          </Table>
+                              file[header.select]
+                            )}
+                          </td>
+                        ) : null,
+                      )}
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
 
-          {/* Pagination */}
-          <PaginationComponent
-            totalRecords={files?.totalCount}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            recordsPerPage={pageLimit}
-          />
-        </Container>
+            {/* Pagination */}
+            <PaginationComponent
+              totalRecords={files?.totalCount}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              recordsPerPage={pageLimit}
+            />
 
-        {JSON.stringify(modalShow)}
-
-        {/* Confirm Box (Modal) */}
-        <ConfirmBox
-          {...modelProps}
-          show={modalShow}
-          onHide={hideModal}
-          onConfirm={onConfirm}
-        />
-      </Row>
-    </>
+            {/* Confirm Box (Modal) */}
+            <ConfirmBox
+              {...modelProps}
+              show={modalShow}
+              onHide={hideModal}
+              onConfirm={onConfirm}
+            />
+          </>
+        )}
+      </Container>
+    </Row>
   );
 };
 

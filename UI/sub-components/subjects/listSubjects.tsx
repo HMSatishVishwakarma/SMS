@@ -86,10 +86,6 @@ const ListSubjects = () => {
     }
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   const onConfirm = async (actionType: number) => {
     try {
       console.log(
