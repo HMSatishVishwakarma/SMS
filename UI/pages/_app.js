@@ -13,6 +13,7 @@ import './../styles/theme.scss';
 import '@/styles/styles.scss';
 
 // import default layouts
+import ErrorBoundary from '@/components/ErrorBoundary';
 import DefaultDashboardLayout from '@/layouts/DefaultDashboardLayout';
 import { Provider } from 'react-redux';
 import { store } from './../redux/store';
@@ -58,7 +59,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
         />
         <Layout>
           <SessionManager>
-            <Component {...pageProps} />
+            <ErrorBoundary>
+              <Component {...pageProps} />
+            </ErrorBoundary>
           </SessionManager>
 
           <Analytics />

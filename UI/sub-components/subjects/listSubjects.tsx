@@ -20,7 +20,7 @@ const ListSubjects = () => {
   const [rowId, setRowId] = useState('');
 
   const handleSearchBox = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
   };
 
   const addFormSubmit = (response: any) => {
@@ -36,7 +36,6 @@ const ListSubjects = () => {
   const handleAddClassBtn = () => {
     setModelProps({
       okText: 'Submit',
-
       title: 'Add Subject',
       body: <AddSubject onClick={addFormSubmit} />,
       actionType: 'addSubject',
@@ -50,6 +49,8 @@ const ListSubjects = () => {
     _id: string;
     value: string;
   }) => {
+    console.log('handleAction');
+
     switch (actionData.type) {
       case 'delete':
       case 'status':

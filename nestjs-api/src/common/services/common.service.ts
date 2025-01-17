@@ -36,7 +36,8 @@ export class CommonService {
     });
   }
 
-  create(body) {
-    return this.commonService.save(body);
+  async create(body) {
+    await this.commonService.save(body);
+    return 'Data Saved successfully.';
   }
 }
