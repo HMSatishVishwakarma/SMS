@@ -1,124 +1,137 @@
-import DataTable from '@/components/comman/dataTable';
-import { ModelProps } from '@/components/comman/interface';
 import axiosInstance from '@/lib/axios-instance';
-import { getStatusKeyByValue } from '@/utils';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import AddSubject from './AddSubject';
+import ConfirmBox from '@/pages/components/common/confirmModalBox';
+import { CSSProperties, useEffect, useState } from 'react';
+import { Table } from 'react-bootstrap';
+import toast, { Toaster } from 'react-hot-toast';
 
-const ListSubjects = () => {
-  const [loading, setLoading] = useState(true);
-  const [refresh, setRefresh] = useState(false);
-  const [files, setFiles] = useState({ data: [], totalCount: 0 });
-  const [headers, setHeaders] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageLimit, setPageLimit] = useState(10);
-  const [modalShow, setModalShow] = useState(false);
-  const [modelProps, setModelProps] = useState<ModelProps>({});
-  const [actions, setActions] = useState([]);
+import PaginationComponent from '@/pages/components/common/Pagination';
 
-  const [rowId, setRowId] = useState('');
+import Container from 'react-bootstrap/Container';
 
-  const handleSearchBox = (e) => {
-    // console.log(e.target.value);
-  };
+import { DialogOptions } from '@/components/comman/interface';
+import OverlayLoader from '@/pages/components/OverlayModal';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import { Form } from 'react-bootstrap';
+import Row from 'react-bootstrap/Row';
 
-  const addFormSubmit = (response: any) => {
-    if (response.status) {
-      toast.success(response.data);
-      setModalShow(false);
-      setRefresh(true);
-    } else {
-      toast.error('Error');
-    }
-  };
+type CallbackFunction<T> = (...args: T[]) => void;
 
-  const handleAddClassBtn = () => {
-    setModelProps({
-      okText: 'Submit',
-      title: 'Add Subject',
-      body: <AddSubject onClick={addFormSubmit} />,
-      actionType: 'addSubject',
-      showFooter: false,
-    });
-    setModalShow(true);
-  };
+const LoadingSpinner = dynamic(() => import('@/components/comman/loader'), {
+  ssr: false,
+});
 
-  const handleAction = async (actionData: {
-    type: string;
-    _id: string;
-    value: string;
-  }) => {
-    console.log('handleAction');
+function useDebounce<T>(
+  callback: CallbackFunction<T>,
+  delay: number,
+): CallbackFunction<T> {
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
 
-    switch (actionData.type) {
-      case 'delete':
-      case 'status':
-        const title = getStatusKeyByValue(actionData.value);
-
-        setModelProps({
-          body: `Are you sure you want to be ${title}?`,
-          actionType: actionData.value,
-        });
-
-        setRowId(actionData._id);
-        setModalShow(true);
-        break;
-      case 'edit':
-        const response: any = { data: { name: 'Sfs' } };
-
-        const data = response.data;
-
-        setRowId(actionData._id);
-        setModelProps({
-          okText: 'Submit',
-
-          title: 'Edit Class',
-          body: <AddSubject initialValues={data} />,
-          actionType: actionData.value,
-          showFooter: false,
-        });
-        setModalShow(true);
-        break;
-
-      default:
-        console.warn('Unknown action');
-    }
-  };
-
-  const onConfirm = async (actionType: number) => {
-    try {
-      console.log(
-        `Model confirm event trigged , Data : ${JSON.stringify(actionType)} `,
-      );
-
-      await axiosInstance.put('subject/updateStatus/' + rowId, {
-        status: actionType,
-      });
-
-      if (actionType === 0) {
-        toast.success('Data deleted successFully');
-      } else {
-        toast.success('Status updated successfully.');
+  useEffect(() => {
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
       }
+    };
+  }, [timerId]);
 
-      // fetchData();
-      setModalShow(false);
+  const debounceFunction: CallbackFunction<T> = (...args: T[]) => {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    const newTimerId = setTimeout(() => {
+      callback(...args);
+    }, delay);
+    setTimerId(newTimerId);
+  };
+
+  return debounceFunction;
+}
+
+const StudentList = () => {
+  const [listStudent, setStudentList] = useState<any>([]);
+
+  const [selectedId, setSelectedId] = useState('');
+  const [modalShow, setModalShow] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [modelProps, setModelProps] = useState<DialogOptions>({});
+
+  const [loading, setLoading] = useState(true);
+
+  const limit = 5;
+
+  const getStudentList = async (value: any = '') => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(
+        `students?limit=${limit}&page=${currentPage}&searchText=${value}`,
+      );
+      setStudentList(response.data);
     } catch (error: any) {
       toast.error(error?.message);
     } finally {
-      setRefresh(true);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    return () => {
-      setRefresh(false);
-    };
-  }, [refresh]);
+    getStudentList();
+  }, [currentPage]);
+
+  const deleteStudent = (id: string) => {
+    setSelectedId(id);
+    setModalShow(true);
+  };
+
+  const activeAndInActiveHandle = (e: any, id: string) => {
+    const { title } = e.target;
+
+    setModelProps({
+      body: `Are you sure you want to be ${title}?`,
+      actionType: title.toLowerCase(),
+    });
+    setSelectedId(id);
+    setModalShow(true);
+  };
+
+  const iconCursor = { cursor: 'pointer', marginLeft: '10px' };
+
+  const onConfirm = async (actionType: string) => {
+    try {
+      setLoading(true);
+      let response: any = '';
+      switch (actionType.toLowerCase()) {
+        case 'active':
+          response = await axiosInstance.put('students/' + selectedId, {
+            status: 1,
+          });
+          break;
+        case 'inactive':
+          response = await axiosInstance.put('students/' + selectedId, {
+            status: 2,
+          });
+          break;
+        case 'delete':
+          response = await axiosInstance.delete('students/' + selectedId);
+          break;
+      }
+
+      toast.success(response.data);
+      setModalShow(false);
+      getStudentList();
+      setLoading(false);
+    } catch (error: any) {
+      toast.error(error?.message);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const hideModal = () => {
-    setRowId('');
+    setSelectedId('');
 
     delete modelProps.body;
     delete modelProps.actionType;
@@ -126,29 +139,144 @@ const ListSubjects = () => {
     setModalShow(false);
   };
 
-  return (
-    <div>
-      <DataTable
-        appConfigURL="app-configuration/getHeaderConfig?tableName=subjectHeaderConfig"
-        pageDataURL="subject"
-        addButtonName="Add Subject"
-        // loading={loading}
-        // currentPage={currentPage}
-        // pageLimit={pageLimit}
-        handleSearchBox={handleSearchBox}
-        handleAddClassBtn={handleAddClassBtn}
-        handleAction={handleAction}
-        // handlePageChange={handlePageChange}
-        hideModal={hideModal}
-        modalShow={modalShow}
-        modelProps={modelProps}
-        onConfirm={onConfirm}
-        refresh={refresh}
+  const router = useRouter();
 
-        // actions={actions}
-      />
-    </div>
+  const handleEditEvent = (id: any) => {
+    router.push({
+      pathname: '/pages/addStudent',
+      query: { type: 'edit', id: id },
+    });
+  };
+
+  const divStyle = {
+    marginLeft: '10px',
+  };
+
+  const tableCellStyle: CSSProperties = {
+    textAlign: 'right',
+  };
+
+  const debouncedSearch = useDebounce(getStudentList, 1000);
+
+  const handleSearchBox = (event: any) => {
+    const { value }: any = event.target;
+
+    debouncedSearch(value);
+  };
+
+  return (
+    <>
+      <OverlayLoader loading={loading} />
+      <Container fluid>
+        <div className="d-flex justify-content-between w-100">
+          <div className="ms-lg-3 d-none d-md-none d-lg-block">
+            {/* Search Form */}
+            <Form className="d-flex align-items-center">
+              <Form.Control
+                type="search"
+                onChange={handleSearchBox}
+                placeholder="Search"
+              />
+            </Form>
+          </div>
+        </div>
+        <Toaster position="top-right" reverseOrder={false} />
+
+        <Row>
+          <Table responsive>
+            <thead>
+              <tr>
+                <th scope="col">Profile</th>
+                <th scope="col">FirstName</th>
+                <th scope="col">LastName</th>
+                <th scope="col">FatherName</th>
+                <th scope="col">MotherName</th>
+                <th scope="col">Class</th>
+                <th scope="col">Status</th>
+                <th scope="col" style={tableCellStyle} align="right">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {listStudent?.data &&
+                listStudent?.data.map((student: any, index: number) => (
+                  <tr key={index}>
+                    <th scope="row">
+                      <img
+                        className="rounded-circle avatar-md"
+                        alt={student?.firstName}
+                        src={student.profileImage}
+                        height="30"
+                        width="30"
+                      />
+                    </th>
+                    <td>{student?.firstName}</td>
+                    <td>{student?.lastName}</td>
+                    <td>{student?.fatherName}</td>
+                    <td>{student?.motherName}</td>
+                    <td>{student?.class}</td>
+                    <td>{student?.statusLabel}</td>
+                    <td align="right">
+                      <i
+                        className="fa fa-eye fs-3 icon"
+                        title="View"
+                        style={iconCursor}
+                      ></i>{' '}
+                      <i
+                        className="fa-regular fa-pen-to-square fs-3 pl3-l icon"
+                        title="Edit"
+                        style={iconCursor}
+                        onClick={(i) => handleEditEvent(student._id)}
+                      ></i>
+                      {student?.status === 1 ? (
+                        <i
+                          className="fa-regular fa-eye-slash fs-3 icon mr-2"
+                          title="Inactive"
+                          onClick={(i) =>
+                            activeAndInActiveHandle(i, student._id)
+                          }
+                          style={iconCursor}
+                        ></i>
+                      ) : (
+                        <i
+                          className="fa-regular fa-eye fs-3 pl3-l icon"
+                          title="Active"
+                          onClick={(i) =>
+                            activeAndInActiveHandle(i, student._id)
+                          }
+                          style={iconCursor}
+                        ></i>
+                      )}
+                      <i
+                        className="fa fa-trash fs-3 icon mb-3 pt-2"
+                        onClick={() => deleteStudent(student._id)}
+                        title="Delete"
+                        style={iconCursor}
+                      ></i>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+
+          <PaginationComponent
+            totalRecords={listStudent?.totalRow}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            recordsPerPage={limit}
+          />
+        </Row>
+
+        <ConfirmBox
+          {...modelProps}
+          show={modalShow}
+          onHide={hideModal}
+          onConfirm={onConfirm}
+        />
+      </Container>
+    </>
   );
 };
 
-export default ListSubjects;
+export default StudentList;
