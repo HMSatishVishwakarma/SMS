@@ -47,3 +47,4 @@ lerna-debug.log*
 
 
 nestjs-api/.env
+UI/.env
