@@ -10,6 +10,8 @@ const ConfirmBox = (props: any) => {
     showFooter = true,
   } = props;
 
+  console.log(`Model props values ${JSON.stringify(props)}`);
+
   return (
     <Modal {...props} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>

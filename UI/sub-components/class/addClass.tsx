@@ -1,21 +1,30 @@
+import { getAllSubjects } from '@/ services/apiService';
+import { DataItem, FormValues, Option } from '@/interface';
 import axiosInstance from '@/lib/axios-instance';
+
+import { transformDataToOptions } from '@/utils';
 import { validationAddClassSchema } from '@/validation';
+
 import { ErrorMessage, Field, Formik } from 'formik';
+import MultiSelect from 'multiselect-react-dropdown';
+import { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { Toaster } from 'react-hot-toast';
 
-interface FormValues {
-  className: string;
-  status: number;
+interface AddClassProps {
+  onClick: (response: string) => void;
+  initialValues?: FormValues;
 }
 
-const AddClass = ({ onClick, initialValues }: any) => {
-  const defaultValues = {
-    className: '', // Default empty string for className
-    status: 1, // Default status 'Active'
+const AddClass: React.FC<AddClassProps> = ({ onClick, initialValues }) => {
+  const [subjectList, setSubjectList] = useState<Option[]>([]);
+
+  const defaultValues: FormValues = {
+    className: '',
+    status: 1,
+    subject: [], // This should be an empty array initially
   };
 
-  // Merge defaultValues with initialValues from props
   const mergedValues = { ...defaultValues, ...initialValues };
 
   const handleSubmit = async (values: FormValues) => {
@@ -35,9 +44,22 @@ const AddClass = ({ onClick, initialValues }: any) => {
     }
   };
 
+  const getSubjectList = async () => {
+    try {
+      const response: { data: DataItem[] } = await getAllSubjects();
+      setSubjectList(transformDataToOptions(response.data));
+    } catch (error) {
+      console.error('Error fetching subject list:', error);
+    }
+  };
+
+  useEffect(() => {
+    getSubjectList();
+  }, []);
+
   return (
-    <Row className="justify-content-center mb-8">
-      <Col xl={9} lg={8} md={12} xs={12}>
+    <Row className="justify-content-center mb-4">
+      <Col xl={8} lg={9} md={12} xs={12}>
         <Toaster position="top-right" reverseOrder={false} />
         <Formik
           initialValues={mergedValues}
@@ -51,13 +73,17 @@ const AddClass = ({ onClick, initialValues }: any) => {
             isValid,
             dirty,
             setFieldValue,
+            errors,
           }) => (
             <Form onSubmit={handleSubmit}>
               <Row className="mb-3">
-                <Form.Label className="col-sm-4" htmlFor="className">
-                  ClassName:
+                <Form.Label
+                  className="col-sm-4 col-form-label"
+                  htmlFor="className"
+                >
+                  Class Name:
                 </Form.Label>
-                <Col md={8} xs={12}>
+                <Col sm={8} xs={12}>
                   <Field
                     type="text"
                     name="className"
@@ -70,24 +96,55 @@ const AddClass = ({ onClick, initialValues }: any) => {
                   <ErrorMessage
                     name="className"
                     component="div"
-                    className="error-message"
+                    className="text-danger"
                   />
                 </Col>
               </Row>
 
               <Row className="mb-3">
-                <Form.Label className="col-md-4" htmlFor="status">
+                <Form.Label
+                  className="col-sm-4 col-form-label"
+                  htmlFor="subject"
+                >
+                  Select Subject:
+                </Form.Label>
+                <Col sm={8} xs={12}>
+                  <MultiSelect
+                    options={subjectList}
+                    selectedValues={values.subject}
+                    onSelect={(selectedList: Option[]) =>
+                      setFieldValue('subject', selectedList)
+                    }
+                    onRemove={(removedList: Option[]) =>
+                      setFieldValue('subject', removedList)
+                    }
+                    displayValue="name"
+                    className="w-100"
+                  />
+                  <ErrorMessage
+                    name="subject"
+                    component="div"
+                    className="text-danger"
+                  />
+                </Col>
+              </Row>
+
+              <Row className="mb-3">
+                <Form.Label
+                  className="col-sm-4 col-form-label"
+                  htmlFor="status"
+                >
                   Status:
                 </Form.Label>
-                <Col md={8} xs={12}>
+                <Col sm={8} xs={12}>
                   <div className="form-check form-check-inline">
                     <Field
                       type="radio"
                       id="active"
                       name="status"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setFieldValue('status', Number(e.target.value));
-                      }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFieldValue('status', Number(e.target.value))
+                      }
                       value={1}
                       className="form-check-input"
                     />
@@ -100,9 +157,9 @@ const AddClass = ({ onClick, initialValues }: any) => {
                       type="radio"
                       id="inactive"
                       name="status"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setFieldValue('status', Number(e.target.value));
-                      }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFieldValue('status', Number(e.target.value))
+                      }
                       value={2}
                       className="form-check-input"
                     />
@@ -110,12 +167,16 @@ const AddClass = ({ onClick, initialValues }: any) => {
                       Inactive
                     </label>
                   </div>
-                  <ErrorMessage name="status" component="div" />
+                  <ErrorMessage
+                    name="status"
+                    component="div"
+                    className="text-danger"
+                  />
                 </Col>
               </Row>
 
               <Row className="mt-4">
-                <Col>
+                <Col sm={12} className="d-flex justify-content-end">
                   <Button
                     variant="primary"
                     type="submit"

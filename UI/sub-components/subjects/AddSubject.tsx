@@ -22,16 +22,16 @@ const AddSubject = ({ onClick, initialValues }: any) => {
     try {
       let response = '';
       if (mergedValues && mergedValues._id) {
-        response = await axiosInstance.put(
-          `subject/${mergedValues._id}`,
-          values,
-        );
+        response = await axiosInstance.put(`subject/${mergedValues._id}`, {
+          name: values.name,
+          description: values.description,
+        });
       } else {
         response = await axiosInstance.post('subject', values);
       }
       onClick(response);
     } catch (error) {
-      console.log('ERROR--------->');
+      console.log('ERROR--------->', error);
       // onClick('Error');
     }
   };

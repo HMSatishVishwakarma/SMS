@@ -65,7 +65,9 @@ const ListSubjects = () => {
         setModalShow(true);
         break;
       case 'edit':
-        const response: any = { data: { name: 'Sfs' } };
+        const response: any = await axiosInstance.get(
+          `subject/${actionData._id}`,
+        );
 
         const data = response.data;
 
@@ -73,8 +75,8 @@ const ListSubjects = () => {
         setModelProps({
           okText: 'Submit',
 
-          title: 'Edit Class',
-          body: <AddSubject initialValues={data} />,
+          title: 'Edit Subject',
+          body: <AddSubject initialValues={data} onClick={addFormSubmit} />,
           actionType: actionData.value,
           showFooter: false,
         });

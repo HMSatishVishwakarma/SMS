@@ -31,7 +31,7 @@ interface DataTableProps {
   addButtonName: string;
   pageDataURL: string;
   modalShow: boolean;
-  handleSearchBox: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  // handleSearchBox: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleAddClassBtn: () => void;
   handleAction: (action: string, data: File) => void;
   modelProps: object;
@@ -44,7 +44,7 @@ const DataTable: React.FC<DataTableProps> = ({
   appConfigURL,
   pageDataURL,
   modelProps,
-  handleSearchBox,
+  // handleSearchBox,
   handleAddClassBtn,
   handleAction,
   modalShow,
@@ -73,6 +73,14 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   useEffect(() => {
+    if (debouncedSearchText) {
+      getPageData(pageLimit, debouncedSearchText);
+    } else {
+      setFiles({ data: [], totalCount: 0 }); // Optionally clear the list when search is empty
+    }
+  }, [debouncedSearchText, pageLimit]);
+
+  useEffect(() => {
     fetchData();
   }, [currentPage]);
 
@@ -82,6 +90,19 @@ const DataTable: React.FC<DataTableProps> = ({
     );
 
     setFiles(classesResponse.data || []);
+  };
+
+  const handleSearchBox = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = event.target;
+
+    const filterData: any = headers
+      .filter((i: any) => i.search)
+      .map((ele) => ({ [ele?.select]: value }))
+      .reduce((acc, curr) => {
+        return { ...acc, ...curr };
+      }, {});
+
+    setSearchText(JSON.stringify(filterData));
   };
 
   useEffect(() => {

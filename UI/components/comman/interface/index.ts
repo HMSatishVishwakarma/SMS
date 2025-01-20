@@ -20,6 +20,7 @@ interface DynamicTableProps {
 }
 
 export interface DialogOptions {
+  size?: string;
   cancelText?: string;
   okText?: string;
   title?: string;

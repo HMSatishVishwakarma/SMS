@@ -14,10 +14,10 @@ export class CommonService {
     sortBy,
     sortOrder,
   ) {
-    parsedFilter = {
-      status: { $ne: 0 },
-      ...parsedFilter,
-    };
+    // parsedFilter = {
+    //   status: { $ne: 0 },
+    //   ...parsedFilter,
+    // };
 
     return this.commonService.getPaginatedData(
       page,
@@ -39,5 +39,19 @@ export class CommonService {
   async create(body) {
     await this.commonService.save(body);
     return 'Data Saved successfully.';
+  }
+
+  async getDataById(id) {
+    return this.commonService.findById(id);
+  }
+
+  async updateData(id: objectIdDto, body) {
+    body.updatedAt = new Date();
+    await this.commonService.findByIdAndUpdate(id, body);
+    return 'Data Updated successfully.';
+  }
+
+  async findAllData() {
+    return await this.commonService.find({ status: { $ne: 0 } });
   }
 }

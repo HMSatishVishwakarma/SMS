@@ -52,13 +52,8 @@ export abstract class BaseModel implements BaseModelInterface {
   constructor(modelRef) {
     this.currentModel = modelRef;
   }
-  countDocuments2: (id: any, data: any) => Promise<object>;
 
   save(data: object) {
-    const response = new this.currentModel(data);
-    return response.save();
-  }
-  save2(data: object) {
     const response = new this.currentModel(data);
     return response.save();
   }
@@ -181,10 +176,14 @@ export abstract class BaseModel implements BaseModelInterface {
 
     const filterWithLike = applyDynamicOrFilter(filter);
 
-    const totalCount = await this.currentModel.countDocuments(filterWithLike);
+    const filterQuery = {
+      $and: [filterWithLike, { status: { $ne: 0 } }],
+    };
+
+    const totalCount = await this.currentModel.countDocuments(filterQuery);
 
     const data = await this.currentModel
-      .find(filterWithLike)
+      .find(filterQuery)
       .skip(skip)
       .limit(limit)
       .select(projection)

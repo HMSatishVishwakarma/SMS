@@ -18,7 +18,7 @@ const ListClasses = () => {
   const [actions, setActions] = useState([]); // Store headers data
   const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [modelProps, setModelProps] = useState<DialogOptions>({});
+  const [modelProps, setModelProps] = useState<DialogOptions>({ size: 'lg' });
   const [modalShow, setModalShow] = useState(false);
   const [rowId, setRowId] = useState('');
 
@@ -113,6 +113,7 @@ const ListClasses = () => {
         const title = getStatusKeyByValue(actionData.value);
 
         setModelProps({
+          size: 'lg',
           body: `Are you sure you want to be ${title}?`,
           actionType: actionData.value,
         });
@@ -128,7 +129,7 @@ const ListClasses = () => {
         setRowId(actionData._id);
         setModelProps({
           okText: 'Submit',
-
+          size: 'lg',
           title: 'Edit Class',
           body: <AddClass initialValues={data} onClick={addFormSubmit} />,
           actionType: actionData.value,
@@ -155,7 +156,7 @@ const ListClasses = () => {
   const handleAddClassBtn = () => {
     setModelProps({
       okText: 'Submit',
-
+      size: 'lg',
       title: 'Add Class',
       body: <AddClass onClick={addFormSubmit} />,
       actionType: 'addClass',

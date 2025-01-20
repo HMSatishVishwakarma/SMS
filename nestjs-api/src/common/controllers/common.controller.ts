@@ -36,8 +36,23 @@ export class CommonController {
     );
   }
 
+  @Get('all')
+  getAllData() {
+    return this.commonService.findAllData();
+  }
+
   @Put('updateStatus/:id')
   async updateStatus(@Param('id') id: objectIdDto, @Body() body) {
     return this.commonService.updateStatus(id, body);
+  }
+
+  @Get(':id')
+  getClassById(@Param('id') id: objectIdDto) {
+    return this.commonService.getDataById(id);
+  }
+
+  @Put(':id')
+  async updateData(@Param('id') id: objectIdDto, @Body() body) {
+    return this.commonService.updateData(id, body);
   }
 }

@@ -7,6 +7,7 @@ const ListClassPage = () => {
   return (
     <Container fluid className="p-6">
       <PageHeading heading="Classes" />
+
       <ListClasses />
     </Container>
   );
