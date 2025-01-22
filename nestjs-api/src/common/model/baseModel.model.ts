@@ -170,7 +170,7 @@ export abstract class BaseModel implements BaseModelInterface {
     projection: any = {},
     sortBy: string = 'createdAt',
     sortOrder: string = 'asc',
-  ) {
+  ): Promise<{ data: []; totalCount: number }> {
     const skip = (page - 1) * limit;
     const sort = sortOrder === 'desc' ? -1 : 1;
 

@@ -1,7 +1,7 @@
 // src/classes/dto/create-class.dto.ts
 
 import { STATUS } from '@app/common/enums';
-import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateClassDto {
   @IsString()
@@ -17,6 +17,10 @@ export class CreateClassDto {
   @IsDate()
   @IsOptional()
   updatedAt: Date;
+
+  @IsArray()
+  @IsOptional()
+  subjects: string[]; // Array of MongoDB ObjectIds referencing subjects
 }
 
 export class StatusUpdateDTO {
@@ -35,4 +39,8 @@ export class StatusUpdateDTO {
   @IsDate()
   @IsOptional()
   updatedAt: Date;
+
+  @IsArray()
+  @IsOptional()
+  subjects: [];
 }

@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+
 import { STATUS } from '../common/enums/global.enum';
 export type classesDocument = Classes & Document;
+
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 @Schema({ collection: 'classes' })
 export class Classes {
@@ -16,6 +18,13 @@ export class Classes {
 
   @Prop({ required: true, default: Date.now })
   updatedAt: Date;
+
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Subject' }], // Array of ObjectId to Subject model
+    required: true,
+    default: [],
+  })
+  subjects: MongooseSchema.Types.ObjectId[]; // Stores an array of subject IDs
 }
 
 export const ClassesSchema = SchemaFactory.createForClass(Classes);

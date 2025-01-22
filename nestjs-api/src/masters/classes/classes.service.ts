@@ -1,4 +1,6 @@
 import { objectIdDto } from '@app/common/dto/common.dto';
+import { PaginationResponse } from '@app/common/interfaces';
+import { Classes } from '@app/schemas/classes.schema';
 import { Injectable } from '@nestjs/common';
 import { CreateClassDto, StatusUpdateDTO } from './dto/classes.dto';
 import { ClassesModel } from './model/class.model';
@@ -15,12 +17,15 @@ export class ClassesService {
     );
   }
 
-  async create({ className, status }: CreateClassDto) {
+  async create({ className, status, subjects }: CreateClassDto) {
+    // Save the new class to the database
     await this.classModel.save({
       className,
       status,
       createdBy: new Date(),
       updatedBy: new Date(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subjects: subjects.map((i: any) => i?.id),
     });
 
     return 'Data Saved successfully.';
@@ -34,19 +39,32 @@ export class ClassesService {
   }
 
   async getClassById(id) {
-    return this.classModel.findById(id, { _id: 1, className: 1, status: 1 });
+    return this.classModel
+      .findById(id, { _id: 1, className: 1, status: 1 })
+      .populate('subjects', 'name');
   }
 
-  async updateClass(id: objectIdDto, body: StatusUpdateDTO) {
+  async updateClass(id: objectIdDto, body: CreateClassDto) {
     body.updatedAt = new Date();
 
-    await this.classModel.findByIdAndUpdate(id, body);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (body.subjects = body.subjects.map((i: any) => i?.id)),
+      await this.classModel.findByIdAndUpdate(id, body);
+
+    console.log(body, '------------------');
 
     return 'Data Updated successfully.';
   }
 
-  getDataWithPagination(page, limit, filter, projection, sortBy, sortOrder) {
-    return this.classModel.getPaginatedData(
+  getDataWithPagination(
+    page,
+    limit,
+    filter,
+    projection,
+    sortBy,
+    sortOrder,
+  ): Promise<PaginationResponse<Classes[]>> {
+    return this.classModel.getPaginatedDataWithSubject(
       page,
       limit,
       filter,

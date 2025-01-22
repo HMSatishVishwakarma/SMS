@@ -17,15 +17,21 @@ interface AddClassProps {
 }
 
 const AddClass: React.FC<AddClassProps> = ({ onClick, initialValues }) => {
-  const [subjectList, setSubjectList] = useState<Option[]>([]);
-
   const defaultValues: FormValues = {
     className: '',
     status: 1,
-    subject: [], // This should be an empty array initially
+    subjects: [], // This should be an empty array initially
   };
 
-  const mergedValues = { ...defaultValues, ...initialValues };
+  const mergedValues: FormValues = {
+    ...defaultValues,
+    ...(initialValues ?? {}),
+    subjects: initialValues?.subjects?.length
+      ? transformDataToOptions(initialValues.subjects)
+      : defaultValues.subjects,
+  };
+
+  const [subjectList, setSubjectList] = useState<Option[]>([]);
 
   const handleSubmit = async (values: FormValues) => {
     try {
@@ -104,25 +110,25 @@ const AddClass: React.FC<AddClassProps> = ({ onClick, initialValues }) => {
               <Row className="mb-3">
                 <Form.Label
                   className="col-sm-4 col-form-label"
-                  htmlFor="subject"
+                  htmlFor="subjects"
                 >
                   Select Subject:
                 </Form.Label>
                 <Col sm={8} xs={12}>
                   <MultiSelect
                     options={subjectList}
-                    selectedValues={values.subject}
+                    selectedValues={values.subjects}
                     onSelect={(selectedList: Option[]) =>
-                      setFieldValue('subject', selectedList)
+                      setFieldValue('subjects', selectedList)
                     }
                     onRemove={(removedList: Option[]) =>
-                      setFieldValue('subject', removedList)
+                      setFieldValue('subjects', removedList)
                     }
                     displayValue="name"
                     className="w-100"
                   />
                   <ErrorMessage
-                    name="subject"
+                    name="subjects"
                     component="div"
                     className="text-danger"
                   />
@@ -177,11 +183,7 @@ const AddClass: React.FC<AddClassProps> = ({ onClick, initialValues }) => {
 
               <Row className="mt-4">
                 <Col sm={12} className="d-flex justify-content-end">
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={!(isValid && dirty)}
-                  >
+                  <Button variant="primary" type="submit" disabled={!isValid}>
                     Submit
                   </Button>
                 </Col>

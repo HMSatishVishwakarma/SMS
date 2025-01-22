@@ -1,4 +1,4 @@
-import { DataItem, Option } from '@/interface';
+import { Option } from '@/interface';
 import { Status } from '@/types/statusEnum';
 
 /**
@@ -16,7 +16,7 @@ export function getStatusKeyByValue(value: number | string): string {
   throw new Error(`No status found for value: ${value}`);
 }
 
-export const transformDataToOptions = (data: DataItem[]): Option[] => {
+export const transformDataToOptions = (data: any[]): Option[] => {
   return data.map((item) => ({
     name: item.name, // Extract the 'name' from the data
     id: item._id, // Use '_id' as the 'id' for the options
