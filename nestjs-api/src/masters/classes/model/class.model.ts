@@ -47,9 +47,26 @@ export class ClassesModel extends BaseModel {
       .select(projection)
       .sort({ [sortBy]: sort });
 
+    const resultArray = data.map((classDoc: any) => {
+      const subjectsString = classDoc.subjects
+        .map((subject) => subject.name)
+        .join(', ');
+
+      // Check if the length of the subjects string exceeds 30 characters
+      const truncatedSubjects =
+        subjectsString.length > 20
+          ? subjectsString.slice(0, 20) + '...'
+          : subjectsString;
+
+      return {
+        ...classDoc.toObject(), // Convert the Mongoose document to a plain object
+        subjects: truncatedSubjects, // Assign the truncated subjects string
+      };
+    });
+
     // Returning the result with data and totalCount
     return {
-      data,
+      data: resultArray,
       totalCount,
     };
   }

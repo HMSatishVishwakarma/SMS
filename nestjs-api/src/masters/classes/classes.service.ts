@@ -40,7 +40,13 @@ export class ClassesService {
 
   async getClassById(id) {
     return this.classModel
-      .findById(id, { _id: 1, className: 1, status: 1 })
+      .findById(id, {
+        _id: 1,
+        className: 1,
+        status: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      })
       .populate('subjects', 'name');
   }
 
@@ -50,8 +56,6 @@ export class ClassesService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (body.subjects = body.subjects.map((i: any) => i?.id)),
       await this.classModel.findByIdAndUpdate(id, body);
-
-    console.log(body, '------------------');
 
     return 'Data Updated successfully.';
   }

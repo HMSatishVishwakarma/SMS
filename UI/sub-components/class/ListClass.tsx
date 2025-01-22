@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { Button, Container, Form, Row, Table } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import AddClass from './addClass';
+import ViewClass from './viewClass';
 
 const ListClasses = () => {
   const [headers, setHeaders] = useState([]); // Store headers data
@@ -133,6 +134,22 @@ const ListClasses = () => {
           title: 'Edit Class',
           body: <AddClass initialValues={data} onClick={addFormSubmit} />,
           actionType: actionData.value,
+          showFooter: false,
+        });
+        setModalShow(true);
+        break;
+
+      case 'view':
+        const viewResponse: any = await getClassById(actionData._id);
+        const viewData = viewResponse.data;
+
+        // Set model properties for viewing class details
+        setRowId(actionData._id);
+        setModelProps({
+          size: 'lg',
+          title: 'View Class Details',
+          body: <ViewClass data={viewData} />, // Use AddClass for view purpose with no edit capability
+          actionType: 'view', // Keep track of the view action
           showFooter: false,
         });
         setModalShow(true);

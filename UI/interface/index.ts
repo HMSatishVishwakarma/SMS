@@ -16,4 +16,6 @@ export interface FormValues {
   className: string;
   status: number;
   subjects: Option[];
+  createdAt: Date;
+  updatedAt: Date;
 }

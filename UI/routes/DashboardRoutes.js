@@ -67,21 +67,72 @@ export const DashboardMenu = [
 
       {
         id: uuid(),
+        link: '/pages/feeCategories',
+        title: 'Fees',
+        name: 'Fees',
+      },
+
+      /*    {
+        id: uuid(),
         link: '#',
-        title: 'ABc',
+        title: 'Fees',
         children: [
           {
             id: uuid(),
-            link: '#',
-            title: 'NavItem 1',
+            link: '/pages/feeCategories',
+            title: 'Fees',
             children: [
-              { id: uuid(), link: '#', name: 'NavChildItem 1' },
+              { id: uuid(), link: '/pages/feeCategories', name: 'Fees' },
               { id: uuid(), link: '#', name: 'NavChildItem 2' },
             ],
           },
           { id: uuid(), link: '#', name: 'NavItem 2' },
         ],
+      }, */
+    ],
+  },
+
+  {
+    id: uuid(),
+    title: 'Fee Management',
+    icon: 'dollar-sign',
+    children: [
+      {
+        id: uuid(),
+        link: '/pages/feeCategories',
+        title: 'Fee Categories',
+        name: 'Fee Categories',
       },
+      {
+        id: uuid(),
+        link: '/pages/FeeStructure',
+        title: 'Fee Structure',
+        name: 'Fee Structure',
+      },
+      {
+        id: uuid(),
+        link: '/pages/FeePayment',
+        title: 'Fee Payment',
+        name: 'Fee Payment',
+      },
+
+      /*    {
+        id: uuid(),
+        link: '#',
+        title: 'Fees',
+        children: [
+          {
+            id: uuid(),
+            link: '/pages/feeCategories',
+            title: 'Fees',
+            children: [
+              { id: uuid(), link: '/pages/feeCategories', name: 'Fees' },
+              { id: uuid(), link: '#', name: 'NavChildItem 2' },
+            ],
+          },
+          { id: uuid(), link: '#', name: 'NavItem 2' },
+        ],
+      }, */
     ],
   },
 
