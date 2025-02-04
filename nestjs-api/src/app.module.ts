@@ -7,8 +7,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StudentsModule } from '@app/students/students.module';
 import { UsersModule } from '@app/users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AppConfigurationModule } from './app-configuration/app-configuration.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
+import { ClassesModule } from './masters/classes/classes.module';
+
+import { FeeManagementModule } from './masters/fee-management/fee-management.module';
+import { SubjectModule } from './masters/subject/subject.module';
 import { ModulesModule } from './modules/modules.module';
 import { RolesModel } from './roles/models/roles.model';
 import { RolesModule } from './roles/roles.module';
@@ -16,9 +21,6 @@ import { RolesService } from './roles/roles.service';
 import { excludeRoutes } from './routes/excludeRoutes';
 import { Roles, RolesSchema } from './schemas/roles.schema';
 import { TeachersModule } from './teachers/teachers.module';
-import { ClassesModule } from './masters/classes/classes.module';
-import { AppConfigurationModule } from './app-configuration/app-configuration.module';
-import { SubjectModule } from './masters/subject/subject.module';
 
 @Module({
   imports: [
@@ -46,12 +48,10 @@ import { SubjectModule } from './masters/subject/subject.module';
     RolesModule,
 
     MongooseModule.forFeature([{ name: Roles.name, schema: RolesSchema }]),
-
     ClassesModule,
-
     AppConfigurationModule,
-
     SubjectModule,
+    FeeManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService, RolesService, RolesModel],
